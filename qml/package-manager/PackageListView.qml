@@ -68,6 +68,7 @@ AppPage {
         filtered: listModel.filteredcount
         onChanged: packageslist.model.setFilterString(text);
         visible: !emptyListNotification.visible
+        Component.onCompleted: { listModel.setFilterString(""); }
     }
 
     Rectangle {

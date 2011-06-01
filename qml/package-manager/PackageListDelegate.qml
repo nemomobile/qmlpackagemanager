@@ -23,6 +23,7 @@ Item {
     }
 
     MouseArea {
+        id: mouseArea
         anchors.fill:  parent
         onClicked: {
             if (packageItem.isCurrent)
@@ -41,7 +42,8 @@ Item {
         Rectangle {
             anchors.fill: parent
             radius: 4
-            color: isCurrent? "lightsteelblue": "white"
+            // the colors should be fetched from theme. BorderImages are too slow.
+            color: isCurrent? (mouseArea.pressed? "steelblue": "lightsteelblue"): "white"
             border.width: 1
         }
 

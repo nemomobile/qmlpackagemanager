@@ -27,6 +27,14 @@ TransactionWrapper::TransactionWrapper(PackageKit::Transaction *transaction, boo
     m_currentPackage = QString();
 }
 
+void TransactionWrapper::cancel()
+{
+    qDebug() << Q_FUNC_INFO;
+    if (m_transaction) {
+        m_transaction->cancel(); // not sure if this really cancels the transaction...
+    }
+}
+
 void TransactionWrapper::onChanged()
 {
     PackageKit::Transaction *t = m_transaction;

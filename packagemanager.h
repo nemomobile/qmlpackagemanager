@@ -27,26 +27,19 @@ public:
 
 signals:
     void updateStateChanged();
-    void cacheRefreshed();
-    void categoriesRefreshed();
 
 public slots:
-    void refreshAll();
     void refreshCache();
     void refreshUpdate();
     void refreshInstalled();
     void refreshAvailable(uint group);
-
-    void resetMarkings(uint marking);
-    void setFilterString(const QString &text);
+    void refreshAll();
 
     void uninstallMarkedPackages(bool simulate, bool autoremove);
     void updateMarkedPackages(bool simulate, bool onlyTrusted);
     void installMarkedPackages(bool simulate, bool onlyTrusted);
 
 private slots:
-    void refreshInstalledWhenUpdateComplete();
-
     void onPackage(QSharedPointer<PackageKit::Package> packagePtr);
     void onInstalledPackage(QSharedPointer<PackageKit::Package> packagePtr);
     void onUpdateAvailablePackage(QSharedPointer<PackageKit::Package> packagePtr);

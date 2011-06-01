@@ -96,26 +96,14 @@ PackageManager::PackageManager(QmlApplicationViewer *viewer, QObject *parent) :
     m_packManContext.setPackagesToBeRemoved(&m_packagesToBeRemoved);
 
     m_packManContext.setPackageGroups(&m_packageGroups);
+    m_packManContext.setSelectedGroup(PackageKit::Enum::UnknownGroup);
 
-    connect(this, SIGNAL(cacheRefreshed()), this, SLOT(refreshUpdate()));
+    QTimer::singleShot(3000, this, SLOT(refreshAll()));
 }
 
 PackageManager *PackageManager::instance()
 {
     return m_packageManager;
-}
-
-void PackageManager::refreshAll()
-{
-//    qDebug() << Q_FUNC_INFO;
-
-    if (m_getPackagesTransaction || m_getUpdatesTransaction)
-        return;
-
-    m_installedPackagesModel->clear();
-
-    connect(this, SIGNAL(updateStateChanged()), this, SLOT(refreshInstalledWhenUpdateComplete()));
-    refreshUpdate();
 }
 
 void PackageManager::refreshCache()
@@ -139,15 +127,16 @@ void PackageManager::refreshCache()
             this, SLOT(onRefreshCacheFinished(PackageKit::Enum::Exit,uint)));
 
     m_refreshCacheTransaction->refreshCache(true);
+
+    m_packManContext.setSelectedGroup(PackageKit::Enum::UnknownGroup);
+    refreshUpdate();
+    refreshInstalled();
 }
 
-void PackageManager::refreshInstalledWhenUpdateComplete()
+void PackageManager::refreshAll()
 {
-    if (!m_getUpdatesTransaction) {
-        disconnect(this, SIGNAL(updateStateChanged()),
-                   this, SLOT(refreshInstalledWhenUpdateComplete()));
-        refreshInstalled();
-    }
+    refreshUpdate();
+    refreshInstalled();
 }
 
 void PackageManager::refreshUpdate()
@@ -245,7 +234,11 @@ void PackageManager::onUpdateAvailablePackage(QSharedPointer<PackageKit::Package
 
 void PackageManager::onAvailablePackage(QSharedPointer<PackageKit::Package> packagePtr)
 {
-//    qDebug() << Q_FUNC_INFO << (*packagePtr).id()  << (*packagePtr).info();
+    qDebug() << Q_FUNC_INFO << (*packagePtr).id()  << (*packagePtr).info();
+
+    QString name = (*packagePtr).name();
+    if (m_installedPackagesModel->findPackage(name) != 0)
+        return;
 
     QString id = (*packagePtr).id();
     QStringList parts = id.split(';');
@@ -268,13 +261,17 @@ void PackageManager::onFinished(PackageKit::Enum::Exit status, uint runtime)
         m_getPackagesTransaction = 0;
     }
 
-    if (t && t->role() == PackageKit::Enum::RoleRemovePackages)
-        refreshAll();
-    else if (t && t->role() == PackageKit::Enum::RoleUpdatePackages)
-        refreshUpdate();
-    else if (t && t->role() == PackageKit::Enum::RoleInstallPackages) {
-        uint group = m_packManContext.selectedGroup();
+    if (t && t->role() == PackageKit::Enum::RoleRemovePackages) {
         m_packManContext.setSelectedGroup(PackageKit::Enum::UnknownGroup);
+        refreshUpdate();
+        refreshInstalled();
+    } else if (t && t->role() == PackageKit::Enum::RoleUpdatePackages) {
+        m_packManContext.setSelectedGroup(PackageKit::Enum::UnknownGroup);
+        refreshUpdate();
+        refreshInstalled();
+    } else if (t && t->role() == PackageKit::Enum::RoleInstallPackages) {
+        uint group = m_packManContext.selectedGroup();
+        refreshCache(); // includes refreshUpdate(); refreshInstalled();
         refreshAvailable(group);
     }
 }
@@ -285,9 +282,6 @@ void PackageManager::onRefreshCacheFinished(PackageKit::Enum::Exit exitCode, uin
 
 //    delete m_refreshCacheTransaction;
     m_refreshCacheTransaction = 0;
-
-    if (exitCode == PackageKit::Enum::ExitSuccess)
-        emit cacheRefreshed();
 }
 
 void PackageManager::uninstallMarkedPackages(bool simulate, bool autoremove)
@@ -449,22 +443,3 @@ void PackageManager::onRequireRestart(PackageKit::Enum::Restart type, const QSha
     qDebug() << Q_FUNC_INFO << type << p->name();
 }
 
-void PackageManager::resetMarkings(uint marking)
-{
-//    qDebug() << Q_FUNC_INFO << marking;
-
-    Package::Marking m = static_cast<Package::Marking>(marking);
-
-    if (m == Package::Uninstall)
-        m_installedPackagesModel->packageMarkings()->resetMarkings();
-    else if (m == Package::Install)
-        m_availablePackagesModel->packageMarkings()->resetMarkings();
-    else if (m == Package::Update)
-        m_updateAvailablePackagesModel->packageMarkings()->resetMarkings();
-}
-
-void PackageManager::setFilterString(const QString &text)
-{
-//    qDebug() << Q_FUNC_INFO << text;
-    m_installedPackagesFilterModel->setFilterString(text);
-}

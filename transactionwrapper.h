@@ -33,6 +33,9 @@ public:
 signals:
     void changed();
 
+public slots:
+    void cancel();
+
 private slots:
     void onChanged();
     void onPackage(QSharedPointer<PackageKit::Package> packagePtr);

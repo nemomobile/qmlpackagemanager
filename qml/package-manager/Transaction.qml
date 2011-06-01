@@ -68,18 +68,23 @@ ModalDialog {
             }
         }]
 
-     ModalMessageBox {
-         id: errorBox
+    onRejected: {
+        if (transactionSet)
+            transaction.cancel();
+    }
 
-         text: transactionSet? transaction.errorText: ""
+    ModalMessageBox {
+        id: errorBox
 
-         title: "Transaction error"
+        text: transactionSet? transaction.errorText: ""
 
-         showAcceptButton: true
-         showCancelButton: false
+        title: "Transaction error"
 
-         fogClickable: false
+        showAcceptButton: true
+        showCancelButton: false
 
-         onAccepted:  { dialog.hide(); }
-     }
+        fogClickable: false
+
+        onAccepted:  { dialog.hide(); }
+    }
 }

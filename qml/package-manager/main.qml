@@ -23,8 +23,8 @@ Window {
         MainView {
             pageTitle: "Package Manager"
             onInstall: { addPage(groupView); }
-            onInstalledApps: { addPage(installedView); packageManager.refreshInstalled(); }
-            onUpdate: { addPage(updateView); packageManager.refreshUpdate(); }
+            onInstalledApps: { addPage(installedView); } // packageManager.refreshInstalled(); }
+            onUpdate: { addPage(updateView); } // packageManager.refreshUpdate(); }
         }
     }
 

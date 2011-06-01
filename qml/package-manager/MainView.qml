@@ -76,9 +76,8 @@ AppPage {
         acceptButtonText: "OK"
         acceptButtonEnabled: transactionSet && transaction.state != "executing"
         cancelButtonEnabled: transactionSet
-                             && (transaction.state == "executing" && transaction.allowCancel
+                             && ((transaction.state == "executing" && transaction.allowCancel)
                                  || transaction.state == "error")
-
     }
 
     Column {
