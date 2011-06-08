@@ -146,7 +146,6 @@ symbian {
         INSTALLS += $$item
     }
     icon.files = $${TARGET}.png
-#    icon.path = /usr/share/icons/hicolor/64x64/apps
     icon.path = /usr/share/pixmaps
     desktopfile.files = $${TARGET}.desktop
     target.path = $${installPrefix}/bin
