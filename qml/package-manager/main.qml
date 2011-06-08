@@ -15,7 +15,7 @@ Window {
 
     onActionMenuTriggered: { if (selectedItem == "exit") Qt.quit(); }
 
-    Component.onCompleted: { switchBook(mainView); } //  packageManager.refreshUpdate(); }
+    Component.onCompleted: { switchBook(mainView); packageManager.refreshRepos();} //  packageManager.refreshUpdate(); }
 
     property string selectedGroupName
 

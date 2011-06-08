@@ -35,6 +35,8 @@ public slots:
     void refreshAvailable(uint group);
     void refreshAll();
 
+    void refreshRepos();
+
     void uninstallMarkedPackages(bool simulate, bool autoremove);
     void updateMarkedPackages(bool simulate, bool onlyTrusted);
     void installMarkedPackages(bool simulate, bool onlyTrusted);

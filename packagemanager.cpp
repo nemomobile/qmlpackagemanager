@@ -194,6 +194,18 @@ void PackageManager::refreshAvailable(uint group)
 //    t->getPackages(PackageKit::Enum::FilterNotInstalled);
 }
 
+void PackageManager::refreshRepos()
+{
+    qDebug() << Q_FUNC_INFO;
+
+    PackageKit::Transaction *t = new PackageKit::Transaction(0, this);
+
+    connect(t, SIGNAL(repoDetail(QString,QString,bool)),
+            this, SLOT(onRepoDetail(QString,QString,bool)));
+
+    t->getRepoList();
+}
+
 void PackageManager::onPackage(QSharedPointer<PackageKit::Package> packagePtr)
 {
     PackageKit::Transaction *transaction = static_cast<PackageKit::Transaction*>(sender());
