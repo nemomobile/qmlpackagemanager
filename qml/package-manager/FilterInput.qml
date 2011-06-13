@@ -37,7 +37,7 @@ Rectangle {
 
     Button {
         id: clearButton
-        text: "clear"
+        text: "Clear"
         height:  input.height
         enabled: input.text != ""
         width: 100
