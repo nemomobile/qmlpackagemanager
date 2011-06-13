@@ -38,7 +38,8 @@ SOURCES += main.cpp \
     transactionwrapper.cpp \
     packmancontext.cpp \
     packagelist.cpp \
-    packagegroup.cpp
+    packagegroup.cpp \
+    repository.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -54,4 +55,5 @@ HEADERS += \
     transactionwrapper.h \
     packmancontext.h \
     packagelist.h \
-    packagegroup.h
+    packagegroup.h \
+    repository.h

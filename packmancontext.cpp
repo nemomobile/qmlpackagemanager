@@ -10,6 +10,7 @@ PackManContext::PackManContext(QObject *parent) :
     m_availablePackagesModel(0),
     m_packageMarkings(0),
     m_refreshCacheTransaction(0),
+    m_refreshReposTransaction(0),
     m_getPackagesTransaction(0),
     m_getUpdatesTransaction(0),
     m_searchGroupsTransaction(0),
@@ -106,6 +107,20 @@ void PackManContext::setRefreshCacheTransaction(PackageKit::Transaction *transac
 QObject *PackManContext::refreshCacheTransaction()
 {
     return m_refreshCacheTransaction;
+}
+
+void PackManContext::setRefreshReposTransaction(PackageKit::Transaction *transaction)
+{
+    if (m_refreshReposTransaction)
+        m_refreshReposTransaction->deleteLater();
+
+    m_refreshReposTransaction = new TransactionWrapper(transaction, true, this);
+    emit refreshReposTransactionChanged();
+}
+
+QObject *PackManContext::refreshReposTransaction()
+{
+    return m_refreshReposTransaction;
 }
 
 void PackManContext::setGetPackagesTransaction(PackageKit::Transaction *transaction)
@@ -239,4 +254,15 @@ void PackManContext::setPackageGroups(PackageGroupList *list)
 QDeclarativeListProperty<PackageGroup> PackManContext::packageGroups()
 {
     return QDeclarativeListProperty<PackageGroup>(this, *m_packageGroups->list());
+}
+
+void PackManContext::setRepositories(RepositoryList *list)
+{
+    m_repositories = list;
+    emit repositoriesChanged();
+}
+
+QDeclarativeListProperty<Repository> PackManContext::repositories()
+{
+    return QDeclarativeListProperty<Repository>(this, *m_repositories->list());
 }

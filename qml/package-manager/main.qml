@@ -9,8 +9,8 @@ Window {
     state: initialstate
     fullScreen: false
 
-    bookMenuModel: [ "Home" ]
-    bookMenuPayload: [ mainView ]
+    bookMenuModel: [ "Packages", "Repositories", "Help" ]
+    bookMenuPayload: [ mainView, repoView, helpView ]
     bookMenuTitle: "Package Manager"
 
     onActionMenuTriggered: { if (selectedItem == "exit") Qt.quit(); }
@@ -21,10 +21,10 @@ Window {
 
     Component { id: mainView
         MainView {
-            pageTitle: "Package Manager"
+            pageTitle: "Packages"
             onInstall: { addPage(groupView); }
-            onInstalledApps: { addPage(installedView); } // packageManager.refreshInstalled(); }
-            onUpdate: { addPage(updateView); } // packageManager.refreshUpdate(); }
+            onInstalledApps: { addPage(installedView); }
+            onUpdate: { addPage(updateView); }
         }
     }
 
@@ -83,6 +83,18 @@ Window {
 
             onOperationRequested: packageManager.uninstallMarkedPackages(true, true)
             onOperationConfirmed: packageManager.uninstallMarkedPackages(false, true);
+        }
+    }
+
+    Component { id: repoView
+        RepoListView {
+            pageTitle: "Repositories"
+        }
+    }
+
+    Component { id: helpView
+        HelpView {
+            pageTitle: "Packages Help"
         }
     }
 }

@@ -60,6 +60,7 @@ private slots:
     void onRequireRestart(PackageKit::Enum::Restart type, const QSharedPointer<PackageKit::Package> &package);
 
     void onRefreshCacheFinished(PackageKit::Enum::Exit,uint);
+    void onRefreshReposFinished(PackageKit::Enum::Exit,uint);
 
  private:
     static PackageManager *m_packageManager;
@@ -70,6 +71,7 @@ private slots:
     PackageKit::Client *m_packageKit;
 
     PackageKit::Transaction *m_refreshCacheTransaction;
+    PackageKit::Transaction *m_refreshReposTransaction;
     PackageKit::Transaction *m_getPackagesTransaction;
     PackageKit::Transaction *m_getUpdatesTransaction;
     PackageKit::Transaction *m_searchGroupsTransaction;
@@ -88,6 +90,8 @@ private slots:
     PackageList m_packagesToBeUpdated;
 
     PackageGroupList m_packageGroups;
+
+    RepositoryList m_repositories;
 };
 
 #endif // PACKAGEMANAGER_H

@@ -1,6 +1,7 @@
 #include "packagemanager.h"
 
 #include "filterpackagemodel.h"
+#include "repository.h"
 
 #include <QDeclarativeContext>
 #include <QGraphicsObject>
@@ -56,6 +57,7 @@ PackageManager *PackageManager::m_packageManager = 0;
 PackageManager::PackageManager(QmlApplicationViewer *viewer, QObject *parent) :
     QObject(parent),
     m_refreshCacheTransaction(0),
+    m_refreshReposTransaction(0),
     m_getPackagesTransaction(0),
     m_getUpdatesTransaction(0),
     m_searchGroupsTransaction(0)
@@ -97,6 +99,8 @@ PackageManager::PackageManager(QmlApplicationViewer *viewer, QObject *parent) :
 
     m_packManContext.setPackageGroups(&m_packageGroups);
     m_packManContext.setSelectedGroup(PackageKit::Enum::UnknownGroup);
+
+    m_packManContext.setRepositories(&m_repositories);
 
     QTimer::singleShot(3000, this, SLOT(refreshAll()));
 }
@@ -199,9 +203,15 @@ void PackageManager::refreshRepos()
     qDebug() << Q_FUNC_INFO;
 
     PackageKit::Transaction *t = new PackageKit::Transaction(0, this);
+    m_packManContext.setRefreshReposTransaction(t);
 
     connect(t, SIGNAL(repoDetail(QString,QString,bool)),
             this, SLOT(onRepoDetail(QString,QString,bool)));
+
+    connect(t, SIGNAL(finished(PackageKit::Enum::Exit,uint)),
+            this, SLOT(onRefreshReposFinished(PackageKit::Enum::Exit,uint)));
+
+    m_refreshReposTransaction = t;
 
     t->getRepoList();
 }
@@ -290,10 +300,12 @@ void PackageManager::onFinished(PackageKit::Enum::Exit status, uint runtime)
 
 void PackageManager::onRefreshCacheFinished(PackageKit::Enum::Exit exitCode, uint duration)
 {
-//    qDebug() << Q_FUNC_INFO << exitCode << duration;
-
-//    delete m_refreshCacheTransaction;
     m_refreshCacheTransaction = 0;
+}
+
+void PackageManager::onRefreshReposFinished(PackageKit::Enum::Exit, uint)
+{
+    m_refreshReposTransaction = 0;
 }
 
 void PackageManager::uninstallMarkedPackages(bool simulate, bool autoremove)
@@ -433,6 +445,7 @@ void PackageManager::onMessage(PackageKit::Enum::Message type, const QString &me
 void PackageManager::onRepoDetail(const QString& repoId, const QString& description, bool enabled)
 {
     qDebug() << Q_FUNC_INFO << repoId << description << enabled;
+    m_repositories << new Repository(repoId, description, enabled, this);
 }
 
 void PackageManager::onRepoSignatureRequired(const PackageKit::Client::SignatureInfo &info)

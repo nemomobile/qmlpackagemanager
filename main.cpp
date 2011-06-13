@@ -17,6 +17,7 @@
 #include "package.h"
 #include "packagegroup.h"
 #include "packagemarkings.h"
+#include "repository.h"
 
 int main(int argc, char *argv[])
 {
@@ -34,6 +35,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<Package>("Package", 1,0, "Package");
     qmlRegisterType<PackageGroup>("Package", 1,0, "PackageGroup");
     qmlRegisterType<PackageMarkings>("Package", 1, 0, "PackageMarkings");
+    qmlRegisterType<Repository>("Repository", 1,0, "Repository");
 
     viewer.setMainQmlFile(QLatin1String("qml/package-manager/main.qml"));
     viewer.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);

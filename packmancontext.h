@@ -5,6 +5,7 @@
 
 #include "package.h"
 #include "packagegroup.h"
+#include "repository.h"
 
 #include <QPackageKit>
 #include <QObject>
@@ -28,6 +29,7 @@ class PackManContext : public QObject
     Q_PROPERTY(QObject *packageMarkings READ packageMarkings NOTIFY packageMarkingsChanged)
 
     Q_PROPERTY(QObject *refreshCacheTransaction READ refreshCacheTransaction NOTIFY refreshCacheTransactionChanged)
+    Q_PROPERTY(QObject *refreshReposTransaction READ refreshReposTransaction NOTIFY refreshReposTransactionChanged)
     Q_PROPERTY(QObject *getPackagesTransaction READ getPackagesTransaction NOTIFY getPackagesTransactionChanged)
     Q_PROPERTY(QObject *getUpdatesTransaction READ getUpdatesTransaction NOTIFY getUpdatesTransactionChanged)
     Q_PROPERTY(QObject *searchGroupsTransaction READ searchGroupsTransaction NOTIFY searchGroupsTransactionChanged)
@@ -41,6 +43,8 @@ class PackManContext : public QObject
     Q_PROPERTY(QDeclarativeListProperty<Package> packagesToBeRemoved READ packagesToBeRemoved NOTIFY packagesToBeRemovedChanged)
 
     Q_PROPERTY(QDeclarativeListProperty<PackageGroup> packageGroups READ packageGroups NOTIFY packageGroupsChanged)
+
+    Q_PROPERTY(QDeclarativeListProperty<Repository> repositories READ repositories NOTIFY repositoriesChanged)
 
 public:
     explicit PackManContext(QObject *parent = 0);
@@ -65,6 +69,9 @@ public:
 
     void setRefreshCacheTransaction(PackageKit::Transaction *transaction);
     QObject *refreshCacheTransaction();
+
+    void setRefreshReposTransaction(PackageKit::Transaction *transaction);
+    QObject *refreshReposTransaction();
 
     void setGetPackagesTransaction(PackageKit::Transaction *transaction);
     QObject *getPackagesTransaction();
@@ -96,6 +103,9 @@ public:
     void setPackageGroups(PackageGroupList *list);
     QDeclarativeListProperty<PackageGroup> packageGroups();
 
+    void setRepositories(RepositoryList *list);
+    QDeclarativeListProperty<Repository> repositories();
+
 signals:
     void packageManagerChanged();
 
@@ -107,6 +117,7 @@ signals:
     void packageMarkingsChanged();
 
     void refreshCacheTransactionChanged();
+    void refreshReposTransactionChanged();
     void getPackagesTransactionChanged();
     void getUpdatesTransactionChanged();
     void searchGroupsTransactionChanged();
@@ -121,6 +132,8 @@ signals:
 
     void packageGroupsChanged();
 
+    void repositoriesChanged();
+
 public slots:
 
 private:
@@ -134,6 +147,7 @@ private:
     QObject *m_packageMarkings;
 
     TransactionWrapper *m_refreshCacheTransaction;
+    TransactionWrapper *m_refreshReposTransaction;
     TransactionWrapper *m_getPackagesTransaction;
     TransactionWrapper *m_getUpdatesTransaction;
     TransactionWrapper *m_searchGroupsTransaction;
@@ -147,6 +161,8 @@ private:
     PackageList *m_packagesToBeRemoved;
 
     PackageGroupList *m_packageGroups;
+
+    RepositoryList *m_repositories;
 };
 
 #endif // PACKMANCONTEXT_H

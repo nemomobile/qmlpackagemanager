@@ -2,7 +2,7 @@ import QtQuick 1.0
 import "utils.js" as Utils
 import MeeGo.Components 0.1
 
-AppPage {
+AppPageWithActionMenu {
     id: packagedetails
     anchors.fill:  parent
     pageTitle: "Details of " + item.packageName

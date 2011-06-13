@@ -3,7 +3,7 @@ import "utils.js" as Utils
 import MeeGo.Components 0.1
 
 
-AppPage {
+AppPageWithActionMenu {
     id: mainview
 
     signal update
@@ -13,10 +13,6 @@ AppPage {
     property int buttonWidth: 170
     property int buttonHeight: 170
     property int horizontalMargin: (parent.width - 3 * buttonWidth) / 4
-
-    actionMenuModel: ["Exit"]
-    actionMenuPayload: ["exit"]
-    actionMenuTitle: ["Actions"]
 
     anchors.fill:  parent
 
