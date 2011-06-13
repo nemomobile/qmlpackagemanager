@@ -24,6 +24,11 @@ bool Repository::isEnabled() const
     return m_isEnabled;
 }
 
+bool Repository::isChanging() const
+{
+    return m_enableTransaction != 0;
+}
+
 void Repository::setEnabled(bool enable)
 {
     qDebug() << Q_FUNC_INFO << description() << enable;
@@ -31,6 +36,8 @@ void Repository::setEnabled(bool enable)
         return;
 
     m_enableTransaction = new PackageKit::Transaction(0, this);
+
+    emit changed();
 
     connect(m_enableTransaction, SIGNAL(finished(PackageKit::Enum::Exit,uint)),
             this, SLOT(onFinished(PackageKit::Enum::Exit,uint)));
@@ -42,13 +49,13 @@ void Repository::onFinished(PackageKit::Enum::Exit exitCode, uint duration)
 {
     qDebug() << Q_FUNC_INFO << exitCode << duration;
 
-    if (exitCode == PackageKit::Enum::ExitSuccess) {
-        m_isEnabled = !m_isEnabled;
-        emit changed();
-    }
-
     m_enableTransaction = 0;
 
+    if (exitCode == PackageKit::Enum::ExitSuccess) {
+        m_isEnabled = !m_isEnabled;
+    }
+
+    emit changed();
 }
 
 

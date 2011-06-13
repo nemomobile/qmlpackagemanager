@@ -10,7 +10,8 @@ class Repository : public QObject
 
     Q_PROPERTY(QString id READ id NOTIFY changed)
     Q_PROPERTY(QString description READ description NOTIFY changed)
-    Q_PROPERTY(bool isEnabled READ isEnabled NOTIFY changed)
+    Q_PROPERTY(bool isEnabled READ isEnabled WRITE setEnabled NOTIFY changed)
+    Q_PROPERTY(bool isChanging READ isChanging NOTIFY changed)
 
 public:
     explicit Repository(QString id = QString(), QString description = QString(), bool isEnabled = false, QObject *parent = 0);
@@ -18,6 +19,7 @@ public:
     QString id() const;
     QString description() const;
     bool isEnabled() const;
+    bool isChanging() const;
 
     void setId(const QString &id);
     void setDescription(const QString &description);

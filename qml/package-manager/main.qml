@@ -11,7 +11,7 @@ Window {
 
     bookMenuModel: [ "Packages", "Repositories", "Help" ]
     bookMenuPayload: [ mainView, repoView, helpView ]
-    bookMenuTitle: "Package Manager"
+    bookMenuTitle: ""
 
     onActionMenuTriggered: { if (selectedItem == "exit") Qt.quit(); }
 
@@ -94,7 +94,7 @@ Window {
 
     Component { id: helpView
         HelpView {
-            pageTitle: "Packages Help"
+            pageTitle: "Package Manager Help"
         }
     }
 }

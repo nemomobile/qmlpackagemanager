@@ -22,7 +22,7 @@ AppPageWithActionMenu {
                 Package Manager is a simple application for managing software packages in the installation.
             It's built on top of the PackageKit library.
             <p>
-            In the Page menu (the folder icon in the title bar), you can navigate between Packages, Repositories, and Help.
+            In the Book menu (the folder icon in the title bar), you can navigate between Packages, Repositories, and Help.
             <p>
             In the Action menu (the list icon in the title bar), you can find \"Exit\".
 

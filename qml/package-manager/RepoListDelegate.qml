@@ -42,37 +42,20 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.left:  indexText.right
             anchors.leftMargin: 30
-            anchors.right: enabledCheckboxArea.left
+            anchors.right: enabledCheckBoxArea.left
             horizontalAlignment: "AlignLeft"
         }
 
-
-        Rectangle {
-            id: enabledCheckBoxArea
+        ToggleButton {
+            id: enabledToggle
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 20
-
-            MouseArea {
-                anchors.fill:  parent
-                onClicked: {
-                    enabledCheckbox.isChecked = !enabledCheckbox.isChecked;
-                    setEnabled(enabledCheckbox.isChecked);
-                }
-            }
-
-            Text {
-                text: "Enabled:"
-                anchors.right:  enabledCheckbox.left
-                anchors.rightMargin: 10
-                anchors.verticalCenter: parent.verticalCenter
-            }
-
-            CheckBox {
-                id: enabledCheckbox
-                isChecked: isEnabled
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
+            on: isEnabled
+            onLabel: qsTr("Enabled")
+            offLabel: qsTr("Disabled")
+            onToggled: {
+                isEnabled = on
             }
         }
     }
