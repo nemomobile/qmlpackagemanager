@@ -7,7 +7,9 @@ AppPageWithActionMenu {
 
     property variant listTransaction: refreshReposTransaction
 
-    property alias emptyListNote: emptyListLabel.text
+    Component.onCompleted: {
+        packageManager.refreshRepos();
+    }
 
     Rectangle {
         id: emptyListNotification
@@ -15,6 +17,7 @@ AppPageWithActionMenu {
         anchors.fill: parent
         Label {
             id: emptyListLabel
+            text: "No repositories found"
             width:  500
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter

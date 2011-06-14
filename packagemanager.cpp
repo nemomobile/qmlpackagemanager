@@ -203,6 +203,9 @@ void PackageManager::refreshRepos()
     qDebug() << Q_FUNC_INFO;
 
     PackageKit::Transaction *t = new PackageKit::Transaction(0, this);
+
+    m_repositories.clear();
+    m_packManContext.setRepositories(&m_repositories);
     m_packManContext.setRefreshReposTransaction(t);
 
     connect(t, SIGNAL(repoDetail(QString,QString,bool)),
@@ -306,6 +309,7 @@ void PackageManager::onRefreshCacheFinished(PackageKit::Enum::Exit exitCode, uin
 void PackageManager::onRefreshReposFinished(PackageKit::Enum::Exit, uint)
 {
     m_refreshReposTransaction = 0;
+    m_packManContext.setRepositories(&m_repositories);
 }
 
 void PackageManager::uninstallMarkedPackages(bool simulate, bool autoremove)
