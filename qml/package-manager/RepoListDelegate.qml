@@ -42,7 +42,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.left:  indexText.right
             anchors.leftMargin: 30
-            anchors.right: enabledCheckBoxArea.left
+            anchors.right: enabledToggle.left
             horizontalAlignment: "AlignLeft"
         }
 
