@@ -72,7 +72,7 @@ AppPageWithActionMenu {
             <h3>Repositories</h3>
 
             In the Repositories page, you can see the list of currently configured software repositories.
-            You can enable and disable a repository by clicking the checkbox in the list.
+            You can enable and disable a repository with the repository toggle button in the list.
             <p>
             <i>Note</i>: It's not possible to add or remove repositories in Package Manager because PackageKit
             does not support it. Use <i>zypper</i> command line utility in a terminal window instead (requires root priviledges):<pre>
