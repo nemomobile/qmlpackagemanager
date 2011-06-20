@@ -20,6 +20,8 @@ AppPageWithActionMenu {
 
     property alias emptyListNote: emptyListLabel.text
 
+    Theme { id: theme }
+
     Rectangle {
         id: emptyListNotification
         visible: packageslist.model.totalcount == 0 && view.listTransaction != undefined && view.listTransaction.state == "success"
@@ -29,6 +31,26 @@ AppPageWithActionMenu {
             width:  500
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
+        }
+    }
+
+    Rectangle {
+        id: transactionErrorNotification
+        visible: view.listTransaction != undefined && view.listTransaction.state == "error"
+        anchors.fill: parent
+        Label {
+            id: errorLabel
+            width:  500
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            text: Utils.errorCodeName(view.listTransaction.errorCode)
+        }
+        Text {
+            anchors.horizontalCenter: errorLabel.horizontalCenter
+            anchors.top: errorLabel.bottom
+            anchors.topMargin: 30
+            font.pixelSize: theme.fontPixelSizeLarge
+            text: view.listTransaction.errorText
         }
     }
 
@@ -67,13 +89,13 @@ AppPageWithActionMenu {
         total: listModel.totalcount
         filtered: listModel.filteredcount
         onChanged: packageslist.model.setFilterString(text);
-        visible: !emptyListNotification.visible
+        visible: !emptyListNotification.visible && !transactionErrorNotification.visible
         Component.onCompleted: { listModel.setFilterString(""); }
     }
 
     Rectangle {
         id: buttonArea
-        visible:  !emptyListNotification.visible
+        visible:  !emptyListNotification.visible && !transactionErrorNotification.visible
         width: resetButton.width + goButton.width + resetButton.anchors.rightMargin
         anchors.right: packageslist.right
         anchors.bottom: parent.bottom

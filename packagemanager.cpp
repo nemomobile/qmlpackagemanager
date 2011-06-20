@@ -133,8 +133,8 @@ void PackageManager::refreshCache()
     m_refreshCacheTransaction->refreshCache(true);
 
     m_packManContext.setSelectedGroup(PackageKit::Enum::UnknownGroup);
-    refreshUpdate();
-    refreshInstalled();
+//    refreshUpdate();
+//    refreshInstalled();
 }
 
 void PackageManager::refreshAll()
@@ -296,13 +296,19 @@ void PackageManager::onFinished(PackageKit::Enum::Exit status, uint runtime)
         refreshInstalled();
     } else if (t && t->role() == PackageKit::Enum::RoleInstallPackages) {
         uint group = m_packManContext.selectedGroup();
-        refreshCache(); // includes refreshUpdate(); refreshInstalled();
+        refreshCache(); // includes refreshUpdate();
+        refreshInstalled();
         refreshAvailable(group);
     }
 }
 
 void PackageManager::onRefreshCacheFinished(PackageKit::Enum::Exit exitCode, uint duration)
 {
+    if (exitCode == PackageKit::Enum::ExitSuccess) {
+        refreshUpdate();
+//        refreshInstalled();
+    }
+
     m_refreshCacheTransaction = 0;
 }
 
@@ -458,12 +464,21 @@ void PackageManager::onRepoSignatureRequired(const PackageKit::Client::Signature
     qDebug() << Q_FUNC_INFO << p->name() << info.repoId;
 
     PackageKit::Transaction *t = new PackageKit::Transaction(QString(), this);
-    t->installSignature(info.type, info.keyId, info.package);
-
     connect(t, SIGNAL(errorCode(PackageKit::Enum::Error,QString)),
             this, SLOT(onErrorCode(PackageKit::Enum::Error,QString)));
     connect(t, SIGNAL(finished(PackageKit::Enum::Exit,uint)),
             this, SLOT(onFinished(PackageKit::Enum::Exit,uint)));
+
+    t->installSignature(info.type, info.keyId, info.package);
+
+    PackageKit::Transaction *origTransaction = qobject_cast<PackageKit::Transaction*>(sender());
+    if (origTransaction) {
+        if (origTransaction->role() == PackageKit::Enum::RoleRefreshCache) {
+            m_refreshCacheTransaction = 0;
+            refreshCache();
+        }
+    }
+
 }
 
 void PackageManager::onRequireRestart(PackageKit::Enum::Restart type, const QSharedPointer<PackageKit::Package> &packagePtr)
