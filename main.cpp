@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
 
     QDeclarativeContext *context = viewer.rootContext();
     context->setContextProperty("initialstate", "mainview");
+    context->setContextProperty("mainWindow", &viewer);
     viewer.engine()->addImageProvider(QLatin1String("icons"), new IconProvider);
     viewer.engine()->addImportPath("/usr/lib/qt4/imports");
 

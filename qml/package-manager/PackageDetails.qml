@@ -81,8 +81,6 @@ AppPageWithActionMenu {
                 TextData { label: "size"; value: item != undefined? item.packageDetailsSize: "" }
             }
 
-            TextData { label:  "is update available"; value: item != undefined? item.packageIsUpdateAvailable: "" }
-
             Column {
                 visible: item != undefined && item.packageIsUpdateAvailable
 
