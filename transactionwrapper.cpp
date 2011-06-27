@@ -7,21 +7,24 @@ TransactionWrapper::TransactionWrapper(PackageKit::Transaction *transaction, boo
     m_transaction(transaction)
 {
 //    qDebug() << Q_FUNC_INFO;
-    connect(m_transaction, SIGNAL(changed()), this, SLOT(onChanged()));
 
-    if (readPackages)
-        connect(m_transaction, SIGNAL(package(QSharedPointer<PackageKit::Package>)),
-                this, SLOT(onPackage(QSharedPointer<PackageKit::Package>)));
+    if (m_transaction) {
+        connect(m_transaction, SIGNAL(changed()), this, SLOT(onChanged()));
 
-    connect(m_transaction, SIGNAL(message(PackageKit::Enum::Message,QString)),
-            this, SLOT(onMessage(PackageKit::Enum::Message,QString)));
-    connect(m_transaction, SIGNAL(errorCode(PackageKit::Enum::Error,QString)),
-            this, SLOT(onErrorCode(PackageKit::Enum::Error,QString)));
-    connect(m_transaction, SIGNAL(repoSignatureRequired(PackageKit::Client::SignatureInfo)),
-            this, SLOT(onRepoSignatureRequired(PackageKit::Client::SignatureInfo)));
-    connect(m_transaction, SIGNAL(finished(PackageKit::Enum::Exit,uint)),
-            this, SLOT(onFinished(PackageKit::Enum::Exit,uint)));
-    connect(m_transaction, SIGNAL(destroyed()), this, SLOT(onDestroyed()));
+        if (readPackages)
+            connect(m_transaction, SIGNAL(package(QSharedPointer<PackageKit::Package>)),
+                    this, SLOT(onPackage(QSharedPointer<PackageKit::Package>)));
+
+        connect(m_transaction, SIGNAL(message(PackageKit::Enum::Message,QString)),
+                this, SLOT(onMessage(PackageKit::Enum::Message,QString)));
+        connect(m_transaction, SIGNAL(errorCode(PackageKit::Enum::Error,QString)),
+                this, SLOT(onErrorCode(PackageKit::Enum::Error,QString)));
+        connect(m_transaction, SIGNAL(repoSignatureRequired(PackageKit::Client::SignatureInfo)),
+                this, SLOT(onRepoSignatureRequired(PackageKit::Client::SignatureInfo)));
+        connect(m_transaction, SIGNAL(finished(PackageKit::Enum::Exit,uint)),
+                this, SLOT(onFinished(PackageKit::Enum::Exit,uint)));
+        connect(m_transaction, SIGNAL(destroyed()), this, SLOT(onDestroyed()));
+    }
 
     m_state = "initialized";
     m_currentPackage = QString();
@@ -97,6 +100,12 @@ void TransactionWrapper::onDestroyed()
     m_transaction = 0;
 }
 
+void TransactionWrapper::setState(QString state)
+{
+    m_state = state;
+    emit changed();
+}
+
 QString TransactionWrapper::state()
 {
 //    qDebug() << Q_FUNC_INFO;
@@ -106,6 +115,12 @@ QString TransactionWrapper::state()
 uint TransactionWrapper::errorCode()
 {
     return m_errorCode;
+}
+
+void TransactionWrapper::setErrorText(const QString &error)
+{
+    m_errorText = error;
+    emit changed();
 }
 
 QString TransactionWrapper::errorText()

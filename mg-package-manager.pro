@@ -39,7 +39,8 @@ SOURCES += main.cpp \
     packmancontext.cpp \
     packagelist.cpp \
     packagegroup.cpp \
-    repository.cpp
+    repository.cpp \
+    networktest.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -56,4 +57,5 @@ HEADERS += \
     packmancontext.h \
     packagelist.h \
     packagegroup.h \
-    repository.h
+    repository.h \
+    networktest.h

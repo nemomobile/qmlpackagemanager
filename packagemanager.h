@@ -62,6 +62,9 @@ private slots:
     void onRefreshCacheFinished(PackageKit::Enum::Exit,uint);
     void onRefreshReposFinished(PackageKit::Enum::Exit,uint);
 
+private:
+    bool testNetworkConnection(TransactionWrapper *tw);
+
  private:
     static PackageManager *m_packageManager;
 

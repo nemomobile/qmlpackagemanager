@@ -9,21 +9,30 @@ ModalDialog {
 
     property variant transaction
     property bool transactionSet : transaction != undefined
+    property string state: transactionSet? transaction.state: ""
 
     property alias content: innerSpace.children
     height: 400
 
     content: [
-        Item {
-            id: stateItem
-            property string state: transactionSet? transaction.state: ""
-            onStateChanged:
-                if (transactionSet && transaction.state == "error")
-                    errorBox.show();
+        Column {
+            id: errorDisplay
+            anchors.fill:  parent
+            visible: dialog.state == "error"
+
+            Label {
+                width: parent.width
+                text: "Transaction Error"
+            }
+
+            Text {
+                text: transactionSet? transaction.errorText: ""
+            }
         },
 
         Column {
             anchors.fill:  parent
+            visible: !errorDisplay.visible
 
             Label {
                 id: statusText
@@ -73,18 +82,4 @@ ModalDialog {
             transaction.cancel();
     }
 
-    ModalMessageBox {
-        id: errorBox
-
-        text: transactionSet? transaction.errorText: ""
-
-        title: "Transaction error"
-
-        showAcceptButton: true
-        showCancelButton: false
-
-        fogClickable: false
-
-        onAccepted:  { dialog.hide(); }
-    }
 }

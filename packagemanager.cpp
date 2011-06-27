@@ -3,6 +3,8 @@
 #include "filterpackagemodel.h"
 #include "repository.h"
 
+#include "networktest.h"
+
 #include <QDeclarativeContext>
 #include <QGraphicsObject>
 #include <QSortFilterProxyModel>
@@ -110,6 +112,18 @@ PackageManager *PackageManager::instance()
     return m_packageManager;
 }
 
+bool PackageManager::testNetworkConnection(TransactionWrapper *tw)
+{
+    NetworkTest test;
+    bool nwConnection = test.testNetworkConnection();
+    if (!nwConnection) {
+        tw->setErrorText("Cannot connect to network");
+        tw->setState("error");
+    }
+
+    return nwConnection;
+}
+
 void PackageManager::refreshCache()
 {
 //    qDebug() << Q_FUNC_INFO;
@@ -117,8 +131,13 @@ void PackageManager::refreshCache()
     if (m_refreshCacheTransaction)
         return;
 
+    TransactionWrapper *tw = new TransactionWrapper(0, true, this);
+    m_packManContext.setRefreshCacheTransaction(tw);
+    if (!testNetworkConnection(tw))
+        return;
+
     m_refreshCacheTransaction = new PackageKit::Transaction(0, this);
-    m_packManContext.setRefreshCacheTransaction(m_refreshCacheTransaction);
+    m_packManContext.setRefreshCacheTransaction(new TransactionWrapper(m_refreshCacheTransaction, true, this));
 
     connect(m_refreshCacheTransaction, SIGNAL(changed()), this, SLOT(onChanged()));
     connect(m_refreshCacheTransaction, SIGNAL(message(PackageKit::Enum::Message,QString)),
@@ -131,10 +150,7 @@ void PackageManager::refreshCache()
             this, SLOT(onRefreshCacheFinished(PackageKit::Enum::Exit,uint)));
 
     m_refreshCacheTransaction->refreshCache(true);
-
     m_packManContext.setSelectedGroup(PackageKit::Enum::UnknownGroup);
-//    refreshUpdate();
-//    refreshInstalled();
 }
 
 void PackageManager::refreshAll()
@@ -153,7 +169,7 @@ void PackageManager::refreshUpdate()
     m_updateAvailablePackagesModel->clear();
 
     m_getUpdatesTransaction = new PackageKit::Transaction(0, this);
-    m_packManContext.setGetUpdatesTransaction(m_getUpdatesTransaction);
+    m_packManContext.setGetUpdatesTransaction(new TransactionWrapper(m_getUpdatesTransaction, false, this));
 
     emit updateStateChanged();
     connect(m_getUpdatesTransaction, SIGNAL(package(QSharedPointer<PackageKit::Package>)),
@@ -169,7 +185,7 @@ void PackageManager::refreshInstalled()
     m_installedPackagesModel->clear();
 
     m_getPackagesTransaction = new PackageKit::Transaction(0, this);
-    m_packManContext.setGetPackagesTransaction(m_getPackagesTransaction);
+    m_packManContext.setGetPackagesTransaction(new TransactionWrapper(m_getPackagesTransaction, false, this));
 
     connect(m_getPackagesTransaction, SIGNAL(package(QSharedPointer<PackageKit::Package>)),
         this, SLOT(onInstalledPackage(QSharedPointer<PackageKit::Package>)));
@@ -188,7 +204,7 @@ void PackageManager::refreshAvailable(uint group)
     m_availablePackagesModel->clear();
 
     PackageKit::Transaction *t = new PackageKit::Transaction(0, this);
-    m_packManContext.setSearchGroupsTransaction(t);
+    m_packManContext.setSearchGroupsTransaction(new TransactionWrapper(t, false, this));
 
     connect(t, SIGNAL(package(QSharedPointer<PackageKit::Package>)),
             this, SLOT(onAvailablePackage(QSharedPointer<PackageKit::Package>)));
@@ -206,7 +222,7 @@ void PackageManager::refreshRepos()
 
     m_repositories.clear();
     m_packManContext.setRepositories(&m_repositories);
-    m_packManContext.setRefreshReposTransaction(t);
+    m_packManContext.setRefreshReposTransaction(new TransactionWrapper(t, true, this));
 
     connect(t, SIGNAL(repoDetail(QString,QString,bool)),
             this, SLOT(onRepoDetail(QString,QString,bool)));
@@ -332,7 +348,7 @@ void PackageManager::uninstallMarkedPackages(bool simulate, bool autoremove)
         packagePtrList << package->package();
 
     PackageKit::Transaction *t = new PackageKit::Transaction(0, this);
-    m_packManContext.setUninstallPackagesTransaction(t);
+    m_packManContext.setUninstallPackagesTransaction(new TransactionWrapper(t, true, this));
 
     connect(t, SIGNAL(package(QSharedPointer<PackageKit::Package>)),
             this, SLOT(onPackage(QSharedPointer<PackageKit::Package>)));
@@ -364,8 +380,13 @@ void PackageManager::updateMarkedPackages(bool simulate, bool onlyTrusted)
     foreach (Package *package, packageList)
         packagePtrList << package->package();
 
+    TransactionWrapper *tw = new TransactionWrapper(0, true, this);
+    m_packManContext.setUpdatePackagesTransaction(tw);
+    if (!testNetworkConnection(tw))
+        return;
+
     PackageKit::Transaction *t = new PackageKit::Transaction(0, this);
-    m_packManContext.setUpdatePackagesTransaction(t);
+    m_packManContext.setUpdatePackagesTransaction(new TransactionWrapper(t, true, this));
 
     connect(t, SIGNAL(package(QSharedPointer<PackageKit::Package>)),
             this, SLOT(onPackage(QSharedPointer<PackageKit::Package>)));
@@ -397,8 +418,13 @@ void PackageManager::installMarkedPackages(bool simulate, bool onlyTrusted)
     foreach (Package *package, packageList)
         packagePtrList << package->package();
 
+    TransactionWrapper *tw = new TransactionWrapper(0, true, this);
+    m_packManContext.setInstallPackagesTransaction(tw);
+    if (!testNetworkConnection(tw))
+        return;
+
     PackageKit::Transaction *t = new PackageKit::Transaction(0, this);
-    m_packManContext.setInstallPackagesTransaction(t);
+    m_packManContext.setInstallPackagesTransaction(new TransactionWrapper(t, true, this));
 
     connect(t, SIGNAL(package(QSharedPointer<PackageKit::Package>)),
             this, SLOT(onPackage(QSharedPointer<PackageKit::Package>)));

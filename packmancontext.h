@@ -67,28 +67,28 @@ public:
     void setPackageMarkings(QObject *markings);
     QObject *packageMarkings();
 
-    void setRefreshCacheTransaction(PackageKit::Transaction *transaction);
+    void setRefreshCacheTransaction(TransactionWrapper *transaction);
     QObject *refreshCacheTransaction();
 
-    void setRefreshReposTransaction(PackageKit::Transaction *transaction);
+    void setRefreshReposTransaction(TransactionWrapper *transaction);
     QObject *refreshReposTransaction();
 
-    void setGetPackagesTransaction(PackageKit::Transaction *transaction);
+    void setGetPackagesTransaction(TransactionWrapper *transaction);
     QObject *getPackagesTransaction();
 
-    void setGetUpdatesTransaction(PackageKit::Transaction *transaction);
+    void setGetUpdatesTransaction(TransactionWrapper *transaction);
     QObject *getUpdatesTransaction();
 
-    void setSearchGroupsTransaction(PackageKit::Transaction *transaction);
+    void setSearchGroupsTransaction(TransactionWrapper *transaction);
     QObject *searchGroupsTransaction();
 
-    void setUpdatePackagesTransaction(PackageKit::Transaction *transaction);
+    void setUpdatePackagesTransaction(TransactionWrapper *transaction);
     QObject *updatePackagesTransaction();
 
-    void setUninstallPackagesTransaction(PackageKit::Transaction *transaction);
+    void setUninstallPackagesTransaction(TransactionWrapper *transaction);
     QObject *uninstallPackagesTransaction();
 
-    void setInstallPackagesTransaction(PackageKit::Transaction *transaction);
+    void setInstallPackagesTransaction(TransactionWrapper *transaction);
     QObject *installPackagesTransaction();
 
     void setPackagesToBeInstalled(PackageList *list);

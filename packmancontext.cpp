@@ -94,12 +94,12 @@ QObject *PackManContext::packageMarkings()
     return m_packageMarkings;
 }
 
-void PackManContext::setRefreshCacheTransaction(PackageKit::Transaction *transaction)
+void PackManContext::setRefreshCacheTransaction(TransactionWrapper *transaction)
 {
     if (m_refreshCacheTransaction)
         m_refreshCacheTransaction->deleteLater();
 
-    m_refreshCacheTransaction = new TransactionWrapper(transaction, true, this);
+    m_refreshCacheTransaction = transaction;
     emit refreshCacheTransactionChanged();
 }
 
@@ -109,12 +109,12 @@ QObject *PackManContext::refreshCacheTransaction()
     return m_refreshCacheTransaction;
 }
 
-void PackManContext::setRefreshReposTransaction(PackageKit::Transaction *transaction)
+void PackManContext::setRefreshReposTransaction(TransactionWrapper *transaction)
 {
     if (m_refreshReposTransaction)
         m_refreshReposTransaction->deleteLater();
 
-    m_refreshReposTransaction = new TransactionWrapper(transaction, true, this);
+    m_refreshReposTransaction = transaction;
     emit refreshReposTransactionChanged();
 }
 
@@ -123,12 +123,12 @@ QObject *PackManContext::refreshReposTransaction()
     return m_refreshReposTransaction;
 }
 
-void PackManContext::setGetPackagesTransaction(PackageKit::Transaction *transaction)
+void PackManContext::setGetPackagesTransaction(TransactionWrapper *transaction)
 {
     if (m_getPackagesTransaction)
         m_getPackagesTransaction->deleteLater();
 
-    m_getPackagesTransaction = new TransactionWrapper(transaction, false, this);
+    m_getPackagesTransaction = transaction;
     emit getPackagesTransactionChanged();
 }
 
@@ -138,12 +138,12 @@ QObject *PackManContext::getPackagesTransaction()
     return m_getPackagesTransaction;
 }
 
-void PackManContext::setGetUpdatesTransaction(PackageKit::Transaction *transaction)
+void PackManContext::setGetUpdatesTransaction(TransactionWrapper *transaction)
 {
     if (m_getUpdatesTransaction)
         m_getUpdatesTransaction->deleteLater();
 
-    m_getUpdatesTransaction = new TransactionWrapper(transaction, false, this);
+    m_getUpdatesTransaction = transaction;
     emit getUpdatesTransactionChanged();
 }
 
@@ -157,21 +157,21 @@ QObject *PackManContext::searchGroupsTransaction()
     return m_searchGroupsTransaction;
 }
 
-void PackManContext::setSearchGroupsTransaction(PackageKit::Transaction *transaction)
+void PackManContext::setSearchGroupsTransaction(TransactionWrapper *transaction)
 {
     if (m_searchGroupsTransaction)
         m_searchGroupsTransaction->deleteLater();
 
-    m_searchGroupsTransaction = new TransactionWrapper(transaction, false, this);
+    m_searchGroupsTransaction = transaction;
     emit searchGroupsTransactionChanged();
 }
 
-void PackManContext::setUpdatePackagesTransaction(PackageKit::Transaction *transaction)
+void PackManContext::setUpdatePackagesTransaction(TransactionWrapper *transaction)
 {
     if (m_updatePackagesTransaction)
         m_updatePackagesTransaction->deleteLater();
 
-    m_updatePackagesTransaction = new TransactionWrapper(transaction, true, this);
+    m_updatePackagesTransaction = transaction;
     emit updatePackagesTransactionChanged();
 }
 
@@ -180,12 +180,12 @@ QObject *PackManContext::updatePackagesTransaction()
     return m_updatePackagesTransaction;
 }
 
-void PackManContext::setUninstallPackagesTransaction(PackageKit::Transaction *transaction)
+void PackManContext::setUninstallPackagesTransaction(TransactionWrapper *transaction)
 {
     if (m_uninstallPackagesTransaction)
         m_uninstallPackagesTransaction->deleteLater();
 
-    m_uninstallPackagesTransaction = new TransactionWrapper(transaction, true, this);
+    m_uninstallPackagesTransaction = transaction;
     emit uninstallPackagesTransactionChanged();
 }
 
@@ -194,12 +194,12 @@ QObject *PackManContext::uninstallPackagesTransaction()
     return m_uninstallPackagesTransaction;
 }
 
-void PackManContext::setInstallPackagesTransaction(PackageKit::Transaction *transaction)
+void PackManContext::setInstallPackagesTransaction(TransactionWrapper *transaction)
 {
     if (m_installPackagesTransaction)
         m_installPackagesTransaction->deleteLater();
 
-    m_installPackagesTransaction = new TransactionWrapper(transaction, true, this);
+    m_installPackagesTransaction = transaction;
     emit installPackagesTransactionChanged();
 }
 

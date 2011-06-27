@@ -72,8 +72,7 @@ AppPageWithActionMenu {
         acceptButtonText: "OK"
         acceptButtonEnabled: transactionSet && transaction.state != "executing"
         cancelButtonEnabled: transactionSet
-                             && ((transaction.state == "executing" && transaction.allowCancel)
-                                 || transaction.state == "error")
+                             && (transaction.state == "executing" && transaction.allowCancel)
     }
 
     Column {

@@ -35,6 +35,8 @@ signals:
 
 public slots:
     void cancel();
+    void setState(QString state);
+    void setErrorText(const QString &error);
 
 private slots:
     void onChanged();
