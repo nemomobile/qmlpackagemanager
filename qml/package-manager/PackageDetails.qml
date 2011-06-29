@@ -38,17 +38,14 @@ AppPageWithActionMenu {
         contentWidth:  width
         contentHeight:  textColumn.height
 
-//        Spinner {
-//            id: spinner
-//        }
-
         Column {
             id: textColumn
+            width: parent.width
 
             Text { height: 30; text: "package: " + (pkg? pkg.displayName: "") }
 
             TextData{ label: "status"; value:item?  item.packageDetailsAvailable + " "
-                                              + item.packageUpdateDetailsAvailable
+                                                   + item.packageUpdateDetailsAvailable
                                                    + " " + item.packageUpdateInfoAvailable: "" }
 
             Image {

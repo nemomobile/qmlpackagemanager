@@ -1,7 +1,7 @@
 import QtQuick 1.0
 import MeeGo.Components 0.1
 
-Rectangle {
+Item {
 
     height: valueField.height
     width: parent.width

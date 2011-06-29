@@ -7,4 +7,9 @@ AppPage {
     actionMenuModel: ["Exit"]
     actionMenuPayload: ["exit"]
     actionMenuTitle: ""
+
+    Rectangle {
+        anchors.fill: parent
+        color: "white"
+    }
 }

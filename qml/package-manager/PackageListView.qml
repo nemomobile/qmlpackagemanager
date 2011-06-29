@@ -50,7 +50,7 @@ AppPageWithActionMenu {
             anchors.top: errorLabel.bottom
             anchors.topMargin: 30
             font.pixelSize: theme.fontPixelSizeLarge
-            text: view.listTransaction.errorText
+            text: view.listTransaction? view.listTransaction.errorText: ""
         }
     }
 
