@@ -11,6 +11,7 @@ class NetworkTest : public QObject
 public:
     NetworkTest(QObject *parent = 0);
 
+    bool hasNetworkConnection();
     bool testNetworkConnection(int timeout = 0, const QString &host = QString(), int port = 80);
 
 private slots:

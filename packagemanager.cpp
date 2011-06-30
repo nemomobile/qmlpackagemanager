@@ -115,7 +115,7 @@ PackageManager *PackageManager::instance()
 bool PackageManager::testNetworkConnection(TransactionWrapper *tw)
 {
     NetworkTest test;
-    bool nwConnection = test.testNetworkConnection();
+    bool nwConnection = test.hasNetworkConnection();
     if (!nwConnection) {
         tw->setErrorText("Cannot connect to network");
         tw->setState("error");

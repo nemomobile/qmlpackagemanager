@@ -2,11 +2,29 @@
 
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QHostAddress>
+#include <QtNetwork/QNetworkInterface>
+#include <QDebug>
 
 NetworkTest::NetworkTest(QObject *parent) :
     QObject(parent)
 {
 
+}
+
+// test if there is a IPv4 address available
+bool NetworkTest::hasNetworkConnection()
+{
+    QList<QNetworkInterface> ifaces = QNetworkInterface::allInterfaces();
+
+    foreach(QNetworkInterface iface, ifaces) {
+        if ( iface.flags().testFlag(QNetworkInterface::IsUp)
+             && !iface.flags().testFlag(QNetworkInterface::IsLoopBack))
+            foreach (QNetworkAddressEntry entry, iface.addressEntries())
+                if (entry.ip().protocol() == QAbstractSocket::IPv4Protocol)
+                    return true;
+    }
+
+    return false;
 }
 
 bool NetworkTest::testNetworkConnection(int timeout, const QString &host, int port)
