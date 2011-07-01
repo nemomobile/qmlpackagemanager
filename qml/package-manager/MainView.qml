@@ -16,6 +16,12 @@ AppPageWithActionMenu {
 
     anchors.fill:  parent
 
+    property bool actionTriggered: false
+
+    function actionFinished() {
+        actionTriggered = false;
+    }
+
     Item {
         id: buttonRect
 
@@ -27,41 +33,45 @@ AppPageWithActionMenu {
 
         Button {
             id: installButton
+            enabled: !actionTriggered
             text: "Download\n&\nInstall"
             anchors.left:  parent.left
             height: buttonHeight
             width: buttonWidth
-            onClicked: install()
+            onClicked: { actionTriggered = true; install(); }
         }
 
         Button {
             id:installedAppsButton
+            enabled: !actionTriggered
             text: "View\n&\nUninstall"
             anchors.horizontalCenter: parent.horizontalCenter
             height: buttonHeight
             width: buttonWidth
-            onClicked:  installedApps()
+            onClicked: { actionTriggered = true; installedApps(); }
         }
 
         Button {
             id: updateButton
+            enabled: !actionTriggered
             text: "Update"
             anchors.right: parent.right
             height: buttonHeight
             width: buttonWidth
-            onClicked: update()
+            onClicked: { actionTriggered = true; update(); }
         }
     }
 
     Button {
         id: refreshCacheButton
+        enabled: !actionTriggered
         text: "Refresh Cache"
         anchors.left:  buttonRect.left
         anchors.right: buttonRect.right
         anchors.top:  buttonRect.bottom
         anchors.topMargin: 50
 
-        onClicked: { packageManager.refreshCache(); refreshCacheTransactionDialog.show(); }
+        onClicked: { actionTriggered = true; packageManager.refreshCache(); refreshCacheTransactionDialog.show(); actionTriggered = false; }
     }
 
     Transaction {
@@ -75,6 +85,7 @@ AppPageWithActionMenu {
                              && (transaction.state == "executing" && transaction.allowCancel)
     }
 
+    /*
     Column {
         anchors.top:  parent.top
         Text {
@@ -89,4 +100,5 @@ AppPageWithActionMenu {
             visible: getPackagesTransaction != undefined
         }
     }
+    */
 }

@@ -22,9 +22,9 @@ Window {
     Component { id: mainView
         MainView {
             pageTitle: "Packages"
-            onInstall: { addPage(groupView); }
-            onInstalledApps: { addPage(installedView); }
-            onUpdate: { addPage(updateView); }
+            onInstall: { addPage(groupView); actionFinished(); }
+            onInstalledApps: { addPage(installedView); actionFinished(); }
+            onUpdate: { addPage(updateView); actionFinished(); }
         }
     }
 

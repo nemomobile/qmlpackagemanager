@@ -126,6 +126,7 @@ AppPageWithActionMenu {
         }
     }
 
+    /*
     Text {
         id: statusText
         color: "grey"
@@ -133,6 +134,7 @@ AppPageWithActionMenu {
         anchors.bottom: parent.bottom
         text: Utils.transactionInfo(view.listTransaction)
     }
+    */
 
 
     Component { id: packageDetailsComponent;  PackageDetails { } }
