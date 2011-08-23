@@ -1,16 +1,15 @@
 import QtQuick 1.0
-import MeeGo.Components 0.1
+import com.nokia.meego 1.0
 
 ListView {
     id:view
 
-    model: installedPackagesModel
-    property string markerColor: "blue"
-    property string markerText: "."
+    property color markerColor
 
     spacing: 0
 
     signal showDetails
+    signal showContextMenu(int x, int y)
 
     focus: true
 
@@ -20,12 +19,23 @@ ListView {
         marker: Component {
             Rectangle {
                 radius: 2
-                color: markerColor
-//                Text { text: markerText; anchors.fill: parent; horizontalAlignment: "AlignHCenter"}
+                color: view.markerColor
             }
         }
 
         onShowDetails: { view.showDetails() }
+
+        onShowContextMenu: {
+//            console.log("opencontextmenu " + (x + delegate.x) + " " + (y + delegate.y));
+            view.showContextMenu(x + delegate.x, y + delegate.y);
+        }
     }
 
+    Item {
+        property int count: view.model.totalcount
+        onCountChanged:  {
+            if (count == 0)
+                currentIndex = 0
+        }
+    }
 }

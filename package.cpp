@@ -231,7 +231,7 @@ Package::DataAvailability Package::updateInfoAvailability()
 
 void Package::onFinished(PackageKit::Enum::Exit status, uint runtime)
 {
-    qDebug() << Q_FUNC_INFO << status << runtime << m_name;
+//    qDebug() << Q_FUNC_INFO << status << runtime << m_name;
     if (sender() == m_basicDetailsTransaction)
         m_basicDetailsTransaction = 0;
     else if (sender() == m_updateDetailsTransaction)

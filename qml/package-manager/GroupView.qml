@@ -1,22 +1,32 @@
 import QtQuick 1.0
 import "utils.js" as Utils
-import MeeGo.Components 0.1
+import com.nokia.meego 1.0
 
 AppPageWithActionMenu {
+    id: view
 
     signal groupSelected(string groupName)
+
+    pageTitle: "Available Package Groups"
+
+    property int buttonWidth: 200
+
+    onGroupSelected: {
+        selectedGroupName = groupName;
+        window.pushPage("AvailableView");
+    }
 
     Flickable {
         contentHeight: buttonGrid.height
         contentWidth: buttonGrid.width
         width: buttonGrid.width
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.centerIn: view
         height: Math.min(buttonGrid.height, parent.height)
 
         Grid {
             id: buttonGrid
-            columns:  3
+            anchors.horizontalCenter: parent.horizontalCenter
+            columns: Math.min(view.width / buttonWidth, 3)
             spacing:  10
 
             Repeater {
@@ -24,7 +34,7 @@ AppPageWithActionMenu {
 
                 Button {
                     height: 50
-                    width: 200
+                    width: buttonWidth
                     text: Utils.groupName(modelData.group)
                     onClicked: {
                         groupSelected(text);

@@ -1,17 +1,21 @@
 import QtQuick 1.0
-import MeeGo.Components 0.1
+import com.nokia.meego 1.0
+import "UIConstants.js" as UI
 
 Item {
     id: packageItem
 
     property variant pkg
     property bool isCurrent: ListView.isCurrentItem
-    property variant marker: Component { Rectangle { height:15; width: 15; color: "blue"}}
+    property variant marker: Component { Rectangle { height:15; width: 15; color: "blue"} }
 
     signal showDetails
+    signal showContextMenu(int x, int y)
 
     anchors.left: parent.left
-    anchors.right:  parent.right
+    anchors.right: parent.right
+    anchors.rightMargin: 20
+
     height: (indexText.height*2 + 4)
 
     Component.onCompleted: {
@@ -31,67 +35,85 @@ Item {
             else
                 ListView.view.currentIndex = index
         }
+        onPressAndHold: {
+            ListView.view.currentIndex = index
+//            console.log(mouse.x + " " + mouse.y);
+            showContextMenu(mouse.x, mouse.y);
+        }
     }
-
-    Theme { id: theme }
 
     Item {
         anchors.fill: parent
         anchors.margins: 2
 
-        Rectangle {
+        BorderImage {
+            id: background
+            border.top: 20
+            border.bottom: 20
+            border.right: 20
+            border.left: 20
             anchors.fill: parent
-            radius: 4
-            // the colors should be fetched from theme. BorderImages are too slow.
-            color: isCurrent? (mouseArea.pressed? "steelblue": "lightsteelblue"): "white"
-            border.width: 1
+            source: isCurrent?
+                        mouseArea.pressed?
+                            "image://theme/meegotouch-button-background-pressed":
+                            "image://theme/meegotouch-list-background-selected" :
+                        mouseArea.pressed?
+                            "image://theme/meegotouch-list-background-pressed" :
+                            "image://theme/meegotouch-list-background"
         }
 
         Rectangle {
-            x: parent.width - 20
-            y: 4
-            width: 15
-            height: 15
+            x: parent.width - 25
+            anchors.verticalCenter: parent.verticalCenter
+            width: 20
+            height: 20
             Loader { id: loader; sourceComponent: marker; anchors.fill:  parent }
             visible: pkg.isMarked
         }
 
         Image {
+            id: iconRect
             source: packageIcon? "image://icons/" + packageIcon: ""
             width: 32
             height: 32
-            x: 40
-            y: 2
+            anchors.left:  indexText.right
+            anchors.leftMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
         }
 
         Text {
             id: indexText
             text: index + 1
-            x: 0
             color: "darkgrey"
-            width: 35
+            width: visible? 80: 0
             anchors.left: parent.left
-            anchors.top: parent.top
-            font.pixelSize: theme.fontPixelSizeLarge
+            anchors.verticalCenter: parent.verticalCenter
+            font.pixelSize: UI.FONT_LARGE
             horizontalAlignment: Text.AlignRight
+            visible: parent.width > 500
         }
 
         Text {
             id: nameText
             text: pkg.displayName
-            x: 80
-            font.pixelSize: theme.fontPixelSizeLarge
-            anchors.top: parent.top
+            anchors.left: iconRect.right
+            anchors.leftMargin: 10
+            anchors.right: parent.right
+            elide: Text.ElideRight
+            font.pixelSize: UI.FONT_LARGE
+            anchors.top: isCurrent? parent.top: indexText.top
         }
 
        Text {
             id: versionText
             text: pkg.name + " " + pkg.version
+            elide: Text.ElideRight
             visible: isCurrent
-            x: 80
-            font.pixelSize: theme.fontPixelSizeMedium
-            y: indexText.height + 2
+            anchors.left: nameText.left
+            anchors.right: nameText.right
+            anchors.top: nameText.bottom
+            anchors.topMargin: 5
+            font.pixelSize: UI.FONT_LSMALL
         }
-
     }
 }

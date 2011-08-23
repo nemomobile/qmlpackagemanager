@@ -171,7 +171,6 @@ void PackageManager::refreshUpdate()
     m_getUpdatesTransaction = new PackageKit::Transaction(0, this);
     m_packManContext.setGetUpdatesTransaction(new TransactionWrapper(m_getUpdatesTransaction, false, this));
 
-    emit updateStateChanged();
     connect(m_getUpdatesTransaction, SIGNAL(package(QSharedPointer<PackageKit::Package>)),
             this, SLOT(onUpdateAvailablePackage(QSharedPointer<PackageKit::Package>)));
     connect(m_getUpdatesTransaction, SIGNAL(finished(PackageKit::Enum::Exit,uint)), this, SLOT(onFinished(PackageKit::Enum::Exit,uint)));
@@ -216,7 +215,7 @@ void PackageManager::refreshAvailable(uint group)
 
 void PackageManager::refreshRepos()
 {
-    qDebug() << Q_FUNC_INFO;
+//    qDebug() << Q_FUNC_INFO;
 
     PackageKit::Transaction *t = new PackageKit::Transaction(0, this);
 
@@ -255,7 +254,7 @@ void PackageManager::onPackage(QSharedPointer<PackageKit::Package> packagePtr)
             qDebug() << "*** info not handled: " << packageString << p->info();
         }
     } else {
-        qDebug() << (*packagePtr).name();
+//        qDebug() << (*packagePtr).name();
     }
 }
 
@@ -275,7 +274,7 @@ void PackageManager::onUpdateAvailablePackage(QSharedPointer<PackageKit::Package
 
 void PackageManager::onAvailablePackage(QSharedPointer<PackageKit::Package> packagePtr)
 {
-    qDebug() << Q_FUNC_INFO << (*packagePtr).id()  << (*packagePtr).info();
+//    qDebug() << Q_FUNC_INFO << (*packagePtr).id()  << (*packagePtr).info();
 
     QString name = (*packagePtr).name();
     if (m_installedPackagesModel->findPackage(name) != 0)
@@ -291,12 +290,11 @@ void PackageManager::onFinished(PackageKit::Enum::Exit status, uint runtime)
 {
     PackageKit::Transaction *t = qobject_cast<PackageKit::Transaction*>(sender());
 
-    qDebug() << Q_FUNC_INFO << status << runtime << t->role();
+//    qDebug() << Q_FUNC_INFO << status << runtime << t->role();
 
     if (sender() == m_getUpdatesTransaction) {
 //        delete m_getUpdatesTransaction;
         m_getUpdatesTransaction = 0;
-        emit updateStateChanged();
     } else if (sender() == m_getPackagesTransaction) {
 //        delete m_getPackagesTransaction;
         m_getPackagesTransaction = 0;
@@ -444,17 +442,17 @@ void PackageManager::installMarkedPackages(bool simulate, bool onlyTrusted)
 
 void PackageManager::onChanged()
 {
-    //oqDebug() << Q_FUNC_INFO;
+    //qDebug() << Q_FUNC_INFO;
 }
 
 void PackageManager::onCategory(const QString &parent_id, const QString &cat_id, const QString &name, const QString &summary, const QString &icon)
 {
-    qDebug() << Q_FUNC_INFO << parent_id << cat_id << name << summary << icon;
+//    qDebug() << Q_FUNC_INFO << parent_id << cat_id << name << summary << icon;
 }
 
 void PackageManager::onErrorCode(PackageKit::Enum::Error error, const QString& details)
 {
-    qDebug() << Q_FUNC_INFO << error << details;
+//    qDebug() << Q_FUNC_INFO << error << details;
 }
 
 void PackageManager::onEulaRequired(const PackageKit::Client::EulaInfo &info)
@@ -480,7 +478,7 @@ void PackageManager::onMessage(PackageKit::Enum::Message type, const QString &me
 
 void PackageManager::onRepoDetail(const QString& repoId, const QString& description, bool enabled)
 {
-    qDebug() << Q_FUNC_INFO << repoId << description << enabled;
+//    qDebug() << Q_FUNC_INFO << repoId << description << enabled;
     m_repositories << new Repository(repoId, description, enabled, this);
 }
 

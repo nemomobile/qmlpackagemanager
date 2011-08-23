@@ -4,7 +4,8 @@
 
 TransactionWrapper::TransactionWrapper(PackageKit::Transaction *transaction, bool readPackages, QObject *parent) :
     QObject(parent),
-    m_transaction(transaction)
+    m_transaction(transaction),
+    m_errorCode(PackageKit::Enum::UnknownError)
 {
 //    qDebug() << Q_FUNC_INFO;
 
@@ -32,7 +33,7 @@ TransactionWrapper::TransactionWrapper(PackageKit::Transaction *transaction, boo
 
 void TransactionWrapper::cancel()
 {
-    qDebug() << Q_FUNC_INFO;
+//    qDebug() << Q_FUNC_INFO;
     if (m_transaction) {
         m_transaction->cancel(); // not sure if this really cancels the transaction...
     }
@@ -62,7 +63,7 @@ void TransactionWrapper::onPackage(QSharedPointer<PackageKit::Package> packagePt
 
 void TransactionWrapper::onMessage(PackageKit::Enum::Message type, const QString &message)
 {
-    qDebug() << Q_FUNC_INFO << message;
+//    qDebug() << Q_FUNC_INFO << message;
 
     emit changed();
 }

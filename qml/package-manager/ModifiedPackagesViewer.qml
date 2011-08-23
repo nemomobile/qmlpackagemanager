@@ -1,6 +1,8 @@
 import QtQuick 1.0
+import com.nokia.meego 1.0
 
 Flickable {
+    id: flick
     contentHeight:  listColumn.height
     anchors.fill:  parent
 

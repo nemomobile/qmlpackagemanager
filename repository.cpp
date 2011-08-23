@@ -31,7 +31,7 @@ bool Repository::isChanging() const
 
 void Repository::setEnabled(bool enable)
 {
-    qDebug() << Q_FUNC_INFO << description() << enable;
+//    qDebug() << Q_FUNC_INFO << description() << enable;
     if (m_enableTransaction || m_isEnabled == enable)
         return;
 
@@ -47,7 +47,7 @@ void Repository::setEnabled(bool enable)
 
 void Repository::onFinished(PackageKit::Enum::Exit exitCode, uint duration)
 {
-    qDebug() << Q_FUNC_INFO << exitCode << duration;
+//    qDebug() << Q_FUNC_INFO << exitCode << duration;
 
     m_enableTransaction = 0;
 

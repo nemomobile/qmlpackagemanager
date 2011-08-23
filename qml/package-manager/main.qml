@@ -1,100 +1,49 @@
 import QtQuick 1.0
 import "utils.js" as Utils
-import MeeGo.Components 0.1
+import com.nokia.meego 1.0
 
-Window {
+PageStackWindow {
     id: window
 
+    platformStyle: PageStackWindowStyle { id: defaultStyle }
+
     anchors.centerIn: parent
-    state: initialstate
-    fullScreen: false
+    //state: initialstate
 
-    bookMenuModel: [ "Packages", "Repositories", "Help" ]
-    bookMenuPayload: [ mainView, repoView, helpView ]
-    bookMenuTitle: ""
-
-    onActionMenuTriggered: { if (selectedItem == "exit") Qt.quit(); }
-
-    Component.onCompleted: { switchBook(mainView); }
+    Component.onCompleted: {
+        // screen.allowedOrientations = Screen.Landscape | Screen.Portrait;
+    }
 
     property string selectedGroupName
 
-    Component { id: mainView
-        MainView {
-            pageTitle: "Packages"
-            onInstall: { addPage(groupView); actionFinished(); }
-            onInstalledApps: { addPage(installedView); actionFinished(); }
-            onUpdate: { addPage(updateView); actionFinished(); }
+    property string currentView: "MainView"
+
+    function changeView(view) {
+        var component = loadComponent(view + ".qml");
+        if (component != null) {
+            pageStack.clear();
+            pageStack.push(component);
+            currentView = view;
         }
     }
 
-    Component { id: updateView
-        PackageListView {
-            pageTitle: "Available Updates"
-            operationText: "Update"
-            listModel: updateAvailablePackagesModel
-            markerColor: "yellow"
-            markerText: "u"
-            listTransaction: getUpdatesTransaction
-            operationTransaction: updatePackagesTransaction
-            emptyListNote: "No updates available"
-
-            onOperationRequested: packageManager.updateMarkedPackages(true, true)
-            onOperationConfirmed: packageManager.updateMarkedPackages(false, true);
+    function pushPage(view) {
+        var component = loadComponent(view + ".qml");
+        if (component != null) {
+            pageStack.push(component);
         }
     }
 
-    Component { id: groupView
-        GroupView {
-            pageTitle: "Available Package Groups"
-            onGroupSelected: {
-                console.log(groupName);
-                selectedGroupName = groupName;
-                addPage(availableView);
-            }
-        }
+    function loadComponent(file) {
+        var component = Qt.createComponent(file)
+
+        if (component.status == Component.Ready)
+            return component;
+        else
+            console.log("Error loading component:", component.errorString());
+        return null;
     }
 
-    Component { id: availableView
-        PackageListView {
-            pageTitle: "Available Packages in " + window.selectedGroupName
-            operationText: "Install"
-            listModel: availablePackagesModel
-            markerColor: "green"
-            markerText: "i"
-            listTransaction: searchGroupsTransaction
-            operationTransaction: installPackagesTransaction
-            emptyListNote: "No packages available in " + window.selectedGroupName
-            onOperationRequested: packageManager.installMarkedPackages(true, true)
-            onOperationConfirmed: packageManager.installMarkedPackages(false, true);
-        }
-    }
+    initialPage: MainView { }
 
-    Component { id: installedView
-        PackageListView {
-            pageTitle: "Installed Packages"
-            operationText: "Uninstall"
-            listModel: installedPackagesModel
-            markerColor: "#f45a5a"
-            markerText: "u"
-            listTransaction: getPackagesTransaction
-            operationTransaction: uninstallPackagesTransaction
-            emptyListNote: "No installed packagages"
-
-            onOperationRequested: packageManager.uninstallMarkedPackages(true, true)
-            onOperationConfirmed: packageManager.uninstallMarkedPackages(false, true);
-        }
-    }
-
-    Component { id: repoView
-        RepoListView {
-            pageTitle: "Repositories"
-        }
-    }
-
-    Component { id: helpView
-        HelpView {
-            pageTitle: "Package Manager Help"
-        }
-    }
 }

@@ -1,5 +1,6 @@
 import QtQuick 1.0
-import MeeGo.Components 0.1
+import com.nokia.meego 1.0
+import "UIConstants.js" as UI
 
 Item {
     id: repoItem
@@ -10,17 +11,18 @@ Item {
     anchors.right:  parent.right
     height: (indexText.height*2 + 4)
 
-    Theme { id: theme }
-
     Item {
         anchors.fill: parent
         anchors.margins: 2
 
-        Rectangle {
+        BorderImage {
+            id: background
+            border.top: 20
+            border.bottom: 20
+            border.right: 20
+            border.left: 20
             anchors.fill: parent
-            radius: 4
-            color: "white"
-            border.width: 1
+            source: "image://theme/meegotouch-list-background"
         }
 
         Text {
@@ -31,32 +33,32 @@ Item {
             width: 35
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: theme.fontPixelSizeLarge
+            font.pixelSize: UI.FONT_LARGE
             horizontalAlignment: Text.AlignRight
         }
 
         Text {
             id: descriptionText
             text: description
-            font.pixelSize: theme.fontPixelSizeLarge
+            font.pixelSize: UI.FONT_DEFAULT
             anchors.verticalCenter: parent.verticalCenter
             anchors.left:  indexText.right
             anchors.leftMargin: 30
             anchors.right: enabledToggle.left
+            elide:  Text.ElideRight
             horizontalAlignment: "AlignLeft"
         }
 
-        ToggleButton {
+        Switch {
             id: enabledToggle
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 20
-            on: isEnabled
-            onLabel: qsTr("Enabled")
-            offLabel: qsTr("Disabled")
-            onToggled: {
-                isEnabled = on
+            checked: isEnabled
+            onCheckedChanged: {
+                isEnabled = checked
             }
         }
+
     }
 }

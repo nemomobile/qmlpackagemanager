@@ -1,13 +1,16 @@
 import QtQuick 1.0
-import MeeGo.Components 0.1
+import "UIConstants.js" as UI
+import com.nokia.meego 1.0
 
 AppPageWithActionMenu {
     id: view
 
-    Theme { id: theme }
+    property Style platformStyle: LabelStyle{}
 
     Flickable {
+        id: flick
         anchors.fill:  parent
+        anchors.margins: 20
         contentHeight: helpText.height
 
         TextEdit {
@@ -15,16 +18,17 @@ AppPageWithActionMenu {
             width: parent.width
             readOnly: true
             wrapMode: "WordWrap"
-            font.pixelSize: theme.fontPixelSizeLarge
+            font.pixelSize: UI.FONT_LARGE
+            color: platformStyle.textColor
+
             text:
                 "
                 <h2>Package Manager</h2>
                 Package Manager is a simple application for managing software packages in the installation.
             It's built on top of the PackageKit library.
             <p>
-            In the Book menu (the folder icon in the title bar), you can navigate between Packages, Repositories, and Help.
-            <p>
-            In the Action menu (the list icon in the title bar), you can find \"Exit\".
+            In the application menu (the list icon in the tool bar), you can navigate between Packages, Repositories, and Help.
+            You can also find \"Exit\" in the menu.
 
             <h3>Packages</h3>
 
@@ -41,7 +45,7 @@ AppPageWithActionMenu {
             <p>
             Click on a package you want to find more info about. The detail page is opened. If you want to
             install the package, check \"Install\" check box on the right. When you are finished, click
-            \"back arrow\" in the upper left corner. Now you can see the green dot on the package to
+            \"back arrow\" in the lower left corner. Now you can see the green dot on the package to
             indicate that the package is selected to be installed.
             <p>
             When you have selected all packages to install, you can trigger the installation process by
@@ -75,19 +79,20 @@ AppPageWithActionMenu {
             You can enable and disable a repository with the repository toggle button in the list.
             <p>
             <i>Note</i>: It's not possible to add or remove repositories in Package Manager because PackageKit
-            does not support it. Use <i>zypper</i> command line utility in a terminal window instead (requires root priviledges):<pre>
-            $ su
-            password: meego
-            $ zypper ar &lt;repo_url&gt;
-            </pre>
+            does not support it. Instead, use <i>zypper</i> command line utility in a terminal window (requires
+            root priviledges):<pre>
+    $ su
+    password: meego
+    $ zypper ar &lt;repo_url&gt;
+    </pre>
 
             <h3>Other notes</h3>
 
             <h4>Performance</h4>
 
             Package Manager requires a substantial amount of free RAM. The main reason for the memory need is in
-            the meego-ux-components and PackageKit libraries. For now, the best performance is achieved, if some of the constantly
-            running processes are killed before launching Package Manager. For example, these processes
+            QtQuick and the qt-components and PackageKit libraries. For now, the best performance is achieved,
+            if some of the constantly running processes are killed before launching Package Manager. For example, these processes
             are not essential for Package Manager: sysuid, meego-im-uiserver, meego-volume-control, pulseaudio, dialer.
 
             <h4>Error situations</h4>
@@ -100,6 +105,8 @@ AppPageWithActionMenu {
             changed since the last refresh. You can accept the new signature simply by refreshing the cache.
             "
         }
-        }
 
+    }
+
+    ScrollDecorator { flickableItem: flick }
 }

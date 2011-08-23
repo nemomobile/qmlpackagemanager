@@ -1,14 +1,17 @@
 import QtQuick 1.0
 import "utils.js" as Utils
-import MeeGo.Components 0.1
+import com.nokia.meego 1.0
+import "UIConstants.js" as UI
 
 AppPageWithActionMenu {
     id: view
 
-    property string operationText: ""
+    property string operationText
+    property string preparationTitle
+    property string executionTitle
+
     property variant listModel
-    property string markerColor
-    property string markerText
+    property color markerColor
     property variant listTransaction
     property variant operationTransaction
 
@@ -20,45 +23,71 @@ AppPageWithActionMenu {
 
     property alias emptyListNote: emptyListLabel.text
 
-    Theme { id: theme }
+    property alias filterInputVisible: searchIcon.checked
 
-    Rectangle {
+    toolButtonsVisible: true
+    goButtonLongLabel: operationText + " selected (" + packageslist.model.markedcount + ")"
+    goButtonShortLabel: operationText + " (" + packageslist.model.markedcount +")"
+    resetButtonEnabled: packageslist.model.markedcount > 0
+    goButtonEnabled: packageslist.model.markedcount > 0
+    // goButtonWidth: 300
+
+    onReset: { packageslist.model.resetMarkings(); }
+    onGo: {
+        prepareTransaction.open();
+        view.operationRequested();
+    }
+
+    property Style platformStyle: LabelStyle { }
+
+    Item {
+        id: payloadArea
+
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: filter.visible? filter.bottom: titleArea.bottom
+        anchors.bottom: parent.bottom
+        anchors.margins: 10
+    }
+
+    Item {
         id: emptyListNotification
         visible: packageslist.model.totalcount == 0 && view.listTransaction != undefined && view.listTransaction.state == "success"
-        anchors.fill: parent
+        anchors.fill: payloadArea
         Label {
             id: emptyListLabel
-            width:  500
+            width:  parent * 0.8
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
         }
     }
 
-    Rectangle {
+    Column {
         id: transactionErrorNotification
         visible: view.listTransaction != undefined && view.listTransaction.state == "error"
-        anchors.fill: parent
+        anchors.fill: payloadArea
+        anchors.margins: 20
+        anchors.topMargin: 50
+        spacing: 30
         Label {
             id: errorLabel
-            width:  500
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            text: Utils.errorCodeName(view.listTransaction.errorCode)
+            text: Utils.errorCodeName(view.listTransaction != undefined? view.listTransaction.errorCode: undefined)
         }
         Text {
-            anchors.horizontalCenter: errorLabel.horizontalCenter
-            anchors.top: errorLabel.bottom
-            anchors.topMargin: 30
-            font.pixelSize: theme.fontPixelSizeLarge
+            width: parent.width
+            font.pixelSize: UI.FONT_SMALL
+            color: platformStyle.textColor
+            wrapMode: Text.WordWrap
             text: view.listTransaction? view.listTransaction.errorText: ""
+            horizontalAlignment: Text.AlignHCenter
         }
     }
 
-    Label {
-        text: "Loading..."
-        color: "darkgrey"
-        anchors.horizontalCenter: packageslist.horizontalCenter
-        anchors.verticalCenter: packageslist.verticalCenter
+    BusyIndicator {
+        platformStyle: BusyIndicatorStyle { size: "large" }
+        running: visible
+        anchors.centerIn: packageslist
         visible: listTransaction != undefined && listTransaction.state == "executing"
     }
 
@@ -67,93 +96,121 @@ AppPageWithActionMenu {
 
         model: view.listModel
         markerColor: view.markerColor
-        markerText: view.markerText
 
-        width: parent.width - 100
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: filter.bottom
-        anchors.bottom: buttonArea.top
-        anchors.topMargin: 10
+        anchors.fill:  payloadArea
 
         onShowDetails: {
-            window.addPage(packageDetailsComponent)
+            pageStack.push(packageDetailsComponent)
+        }
+
+        onShowContextMenu: {
+            menu.open();
+        }
+
+    }
+
+    ContextMenu {
+        id: menu
+        platformTitle: Item {
+            width: parent.width
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: 20
+            height: menuTitleLabel.height + 30
+
+            Label {
+                id: menuTitleLabel
+                text: view.currentPackage.packageObject.displayName
+                elide: Text.ElideRight
+            }
+        }
+
+        visualParent: view
+        property bool isMarked: false
+
+        onStatusChanged: {
+            if (status == DialogStatus.Opening)
+                isMarked = view.currentPackage.packageIsMarked;
+        }
+
+        MenuItem {
+            text: menu.isMarked? "Unselect" : "Select for " + view.operationText
+            onClicked: {
+                menu.close();
+                view.currentListDelegate.mark(!menu.isMarked);
+            }
+        }
+    }
+
+    Item {
+        id: titleArea
+        height:  childrenRect.height
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right:  parent.right
+        anchors.leftMargin: 20
+        anchors.rightMargin: 20
+        Label {
+            id: titleLabel
+            text: view.pageTitle
+            font.pixelSize: UI.FONT_LARGE
+            anchors.verticalCenter: searchIcon.verticalCenter
+        }
+
+        Label {
+            id: statsText
+            anchors.left: titleLabel.right
+            anchors.leftMargin: 20
+            anchors.bottom: titleLabel.bottom
+            height: titleLabel.height
+            text: "(" + (filterInputVisible? listModel.filteredcount + "/": "") + listModel.totalcount + ")"
+
+        }
+
+        ToolButton {
+            id: searchIcon
+            checkable: true
+            checked: false
+            height:  48
+            width: 48
+            anchors.right: parent.right
+            iconSource: "image://theme/icon-m-common-search"
+            onCheckedChanged: { listModel.setFilterString(checked? filter.text: ""); }
         }
     }
 
     FilterInput {
         id: filter
-        anchors.left: packageslist.left
-        anchors.right: packageslist.right
-        anchors.top: parent.top
-        anchors.topMargin: 20
+        anchors.left: payloadArea.left
+        anchors.right:  payloadArea.right
+        anchors.top: titleArea.bottom
+        anchors.topMargin: 10
+        anchors.leftMargin:  40
+        anchors.rightMargin: 40
         total: listModel.totalcount
         filtered: listModel.filteredcount
-        onChanged: packageslist.model.setFilterString(text);
-        visible: !emptyListNotification.visible && !transactionErrorNotification.visible
+        onChanged: listModel.setFilterString(text);
+        visible: !emptyListNotification.visible && !transactionErrorNotification.visible && filterInputVisible
         Component.onCompleted: { listModel.setFilterString(""); }
     }
 
-    Rectangle {
-        id: buttonArea
-        visible:  !emptyListNotification.visible && !transactionErrorNotification.visible
-        width: resetButton.width + goButton.width + resetButton.anchors.rightMargin
-        anchors.right: packageslist.right
-        anchors.bottom: parent.bottom
-        height: 50
-
-        Button {
-            id: resetButton
-            text: "Reset selection"
-            enabled: packageslist.model.markedcount > 0
-            height: goButton.height
-            width: goButton.width
-            anchors.right: goButton.left
-            anchors.rightMargin: 20
-            onClicked: { packageslist.model.resetMarkings(); }
-        }
-
-        Button {
-            id: goButton
-            text: view.operationText + " selected (" + packageslist.model.markedcount + ")"
-            height: parent.height
-            width: 300
-            anchors.right: parent.right
-            enabled: packageslist.model.markedcount > 0
-            onClicked: {
-                prepareTransaction.show();
-                view.operationRequested();
-            }
-        }
-    }
-
-    /*
-    Text {
-        id: statusText
-        color: "grey"
-        visible: view.listTransaction != undefined && view.listTransaction.state != "success"
-        anchors.bottom: parent.bottom
-        text: Utils.transactionInfo(view.listTransaction)
-    }
-    */
-
+    ScrollDecorator { flickableItem: packageslist; __minIndicatorSize: 25 }
 
     Component { id: packageDetailsComponent;  PackageDetails { } }
 
     Transaction {
         id: prepareTransaction
-        title: "Preparing operation " + view.operationText
+        titleText: view.preparationTitle
         transaction: view.operationTransaction
         acceptButtonText: "Confirm"
-        acceptButtonEnabled: transactionSet && transaction.state == "success"
+        acceptButtonEnabled: state == "success"
         height: parent.height * 0.8
         showStatus: false
 
         onAccepted: {
-            commitTransaction.show();
+            commitTransaction.open();
             view.operationConfirmed();
-        }
-
-        onRejected: {
         }
 
         content: ModifiedPackagesViewer { }
@@ -161,19 +218,13 @@ AppPageWithActionMenu {
 
     Transaction {
         id: commitTransaction
-        title: "Executing operation " + view.operationText
+        titleText: view.executionTitle
         transaction: view.operationTransaction
 
-        acceptButtonEnabled: transactionSet && (transaction.state == "error" || transaction.state == "success")
-        cancelButtonEnabled: transactionSet && transaction.state == "executing" && transaction.allowCancel
+        acceptButtonEnabled: state == "error" || state == "success"
+        rejectButtonEnabled: state == "executing" && transaction.allowCancel
 
-        onRejected: {
-            filter.text = "";
-        }
-        onAccepted: {
-            filter.text = "";
-        }
-
-//        content:  Text { text:  view.operationTransaction != undefined && view.operationTransaction.state == "executing"? "Executing...": "Done" }
+        onRejected: { filter.text = ""; }
+        onAccepted: { filter.text = ""; }
     }
 }

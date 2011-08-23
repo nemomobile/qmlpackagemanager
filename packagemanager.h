@@ -25,9 +25,6 @@ public:
 
     explicit PackageManager(QmlApplicationViewer *viewer, QObject *parent = 0);
 
-signals:
-    void updateStateChanged();
-
 public slots:
     void refreshCache();
     void refreshUpdate();

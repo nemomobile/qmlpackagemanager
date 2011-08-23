@@ -1,85 +1,156 @@
 import QtQuick 1.0
 import "utils.js" as Utils
-import MeeGo.Components 0.1
+import com.nokia.meego 1.0
+import "UIConstants.js" as UI
 
-ModalDialog {
-    id: dialog
+Sheet {
+    id: sheet
 
-    property bool showStatus: true
+    acceptButtonText: "OK"
+    rejectButtonText: "Cancel"
 
+    platformStyle: SheetStyle { }
     property variant transaction
+    property bool showStatus: true
     property bool transactionSet : transaction != undefined
     property string state: transactionSet? transaction.state: ""
 
-    property alias content: innerSpace.children
-    height: 400
+    property bool acceptButtonEnabled: true
+    property bool rejectButtonEnabled: true
 
-    content: [
+    property alias titleText: titleLabel.text
+    property alias content: contentArea.children
+
+    onAcceptButtonEnabledChanged: {
+        if (sheet.getButton("acceptButton")) sheet.getButton("acceptButton").enabled = acceptButtonEnabled
+    }
+
+    onRejectButtonEnabledChanged: {
+        if (sheet.getButton("rejectButton")) sheet.getButton("rejectButton").enabled = rejectButtonEnabled
+    }
+
+    anchors.fill: parent
+
+    title: BusyIndicator {
+        anchors.centerIn: parent; visible: sheet.state == "executing"; running: visible
+    }
+
+    content: Item {
+        anchors.fill: parent
+
+        LabelStyle { id: labelStyle }
+
+        Label {
+            id: titleLabel
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: 10
+            elide: Text.ElideRight
+            font.capitalization: Font.MixedCase
+            font.pixelSize: UI.FONT_LARGE
+            font.bold: true
+        }
+
+        Item {
+            id: statusSpace
+            anchors.top: titleLabel.bottom
+            anchors.left:  parent.left
+            anchors.right:  parent.right
+            anchors.bottom: parent.bottom
+            anchors.margins: 10
+            anchors.leftMargin: 30
+        }
+
         Column {
-            id: errorDisplay
-            anchors.fill:  parent
-            visible: dialog.state == "error"
+            id: statusArea
 
-            Label {
+            anchors.fill:  statusSpace
+            anchors.topMargin: content.length > 0? 0: 100
+            spacing: 20
+
+            Column {
+                id: errorDisplay
                 width: parent.width
-                text: "Transaction Error"
-            }
+                visible: sheet.state == "error"
 
-            Text {
-                text: transactionSet? transaction.errorText: ""
-            }
-        },
-
-        Column {
-            anchors.fill:  parent
-            visible: !errorDisplay.visible
-
-            Label {
-                id: statusText
-                width: parent.width
-                text: transactionSet? Utils.statusText(transaction.status): "-"
-                visible: showStatus
-            }
-
-            ProgressBar {
-                id: progressBar
-                anchors.left:  parent.left
-                anchors.right:  parent.right
-                anchors.margins: 20
-                percentage:  transactionSet && transaction.state == "executing"? transaction.percentage: -1
-                visible: percentage >= 0 && percentage <= 100
-            }
-
-            Row {
                 Label {
-                    id: packageLabel
-                    font.pixelSize: theme.fontPixelSizeMedium
-                    elideText: true
-                    width: parent.parent.width * 0.4
-                    text: transactionSet? transaction.currentPackage: ""
-                    visible: transactionSet && transaction.currentPackage != undefined && transaction.currentPackage != ""
+                    width: parent.width
+                    text: "Transaction Error"
+                    font.pixelSize: UI.FONT_LARGE
+                }
+
+                Text {
+                    width: parent.width
+                    text: transactionSet? transaction.errorText: ""
+                    wrapMode: Text.WordWrap
+                    font.pixelSize: UI.FONT_LSMALL
+                    color: labelStyle.textColor
+                }
+            }
+
+            Column {
+                id: progressArea
+                anchors.left: parent.left
+                anchors.right:  parent.right
+                visible: !errorDisplay.visible
+                spacing: 20
+
+                Label {
+                    id: statusText
+                    anchors.left:  parent.left
+                    anchors.right: parent.right
+                    text: transactionSet? Utils.statusText(transaction.status): "-"
+                    visible: showStatus
                 }
 
                 ProgressBar {
-                    id: subprogressBar
-                    anchors.verticalCenter: packageLabel.verticalCenter
-                    height:  20
-                    width: parent.parent.width * 0.55
-                    percentage:  transactionSet && transaction.state == "executing"? transaction.subpercentage: -1
-                    visible: percentage > 0 && percentage <= 100
+                    id: progressBar
+                    anchors.left:  parent.left
+                    anchors.right:  parent.right
+                    minimumValue: 0
+                    maximumValue: 100
+                    value: sheet.state == "executing"? transaction.percentage: -1
+                    visible: value > 0 && value <= 100
+                }
+
+                Column {
+                    id: substatus
+                    anchors.left:  parent.left
+                    anchors.right:  parent.right
+                    anchors.leftMargin: parent.width * 0.1
+                    spacing: 10
+
+                    Label {
+                        id: packageLabel
+                        width: parent.width
+                        text: transactionSet? transaction.currentPackage: ""
+                        elide: Text.ElideRight
+                        visible: transactionSet && transaction.currentPackage != undefined && transaction.currentPackage != ""
+                    }
+
+                    ProgressBar {
+                        id: subprogressBar
+                        width: packageLabel.width
+                        minimumValue: 0
+                        maximumValue: 100
+                        value: sheet.state == "executing"? transaction.subpercentage: -1
+                        visible: value > 0 && value <= 100 && packageLabel.text != ""
+                    }
                 }
             }
 
-            Rectangle {
-                id: innerSpace
-                width: parent.width
-                Rectangle { id: defaultFill; height: 20 }
+            Item {
+                id: contentArea
+                anchors.left:  parent.left
+                anchors.right: parent.right
+                height: statusSpace.height - progressArea.bottom
             }
-        }]
+        }
+    }
 
     onRejected: {
         if (transactionSet)
             transaction.cancel();
     }
-
 }

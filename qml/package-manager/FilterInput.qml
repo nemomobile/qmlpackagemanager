@@ -1,9 +1,9 @@
 import QtQuick 1.0
-import MeeGo.Components 0.1
+import com.nokia.meego 1.0
+import "UIConstants.js" as UI
 
-Rectangle {
+Item {
     id: filterInput
-    height: label.height
 
     property alias text: input.text
     property int total
@@ -11,29 +11,24 @@ Rectangle {
 
     signal changed
 
+    height: childrenRect.height
+
     Label {
         id: label
-        x:10
-        text: "Filter: "
         anchors.left:  parent.left
+        font.pixelSize: UI.FONT_LARGE
+        text: "Find: "
     }
 
-    TextEntry {
+    TextField {
         id: input
         text: ""
         anchors.left: label.right
-        anchors.right: statsText.left
-        height: label.height
+        anchors.right: clearButton.left
+        height: label.height + 4
         onTextChanged: filterInput.changed(); // on meego textChanged does not get emitted automatically
     }
 
-    Label {
-        id: statsText
-        anchors.right: clearButton.left
-        width: 200
-        height: label.height
-        text: "(" + (input.text != ""? filtered + "/": "") + total + ")"
-    }
 
     Button {
         id: clearButton
