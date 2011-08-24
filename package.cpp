@@ -61,7 +61,7 @@ QString Package::displayName() const
 
 QString Package::filterName() const
 {
-    if (m_package.isNull())
+    if (m_package.isNull() && m_updatePackage.isNull())
         return m_name;
     else
         return basicInfo()->name() + ":::" + basicInfo()->summary();
