@@ -30,7 +30,7 @@ public slots:
     void refreshUpdate();
     void refreshInstalled();
     void refreshAvailable(uint group);
-    void refreshAll();
+    void refreshAll(uint delay = 0);
 
     void refreshRepos();
 

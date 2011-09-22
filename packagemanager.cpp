@@ -103,8 +103,6 @@ PackageManager::PackageManager(QmlApplicationViewer *viewer, QObject *parent) :
     m_packManContext.setSelectedGroup(PackageKit::Enum::UnknownGroup);
 
     m_packManContext.setRepositories(&m_repositories);
-
-    QTimer::singleShot(3000, this, SLOT(refreshAll()));
 }
 
 PackageManager *PackageManager::instance()
@@ -153,10 +151,15 @@ void PackageManager::refreshCache()
     m_packManContext.setSelectedGroup(PackageKit::Enum::UnknownGroup);
 }
 
-void PackageManager::refreshAll()
+void PackageManager::refreshAll(uint delay)
 {
-    refreshUpdate();
-    refreshInstalled();
+//    qDebug() << Q_FUNC_INFO << delay;
+    if (delay == 0) {
+        refreshUpdate();
+        refreshInstalled();
+    } else {
+        QTimer::singleShot(delay, this, SLOT(refreshAll()));
+    }
 }
 
 void PackageManager::refreshUpdate()
@@ -173,6 +176,8 @@ void PackageManager::refreshUpdate()
 
     connect(m_getUpdatesTransaction, SIGNAL(package(QSharedPointer<PackageKit::Package>)),
             this, SLOT(onUpdateAvailablePackage(QSharedPointer<PackageKit::Package>)));
+    connect(m_getUpdatesTransaction, SIGNAL(repoSignatureRequired(PackageKit::Client::SignatureInfo)),
+            this, SLOT(onRepoSignatureRequired(PackageKit::Client::SignatureInfo)));
     connect(m_getUpdatesTransaction, SIGNAL(finished(PackageKit::Enum::Exit,uint)), this, SLOT(onFinished(PackageKit::Enum::Exit,uint)));
     m_getUpdatesTransaction->getUpdates(); // PackageKit::Enum::FilterInstalled);
 }
@@ -207,10 +212,11 @@ void PackageManager::refreshAvailable(uint group)
 
     connect(t, SIGNAL(package(QSharedPointer<PackageKit::Package>)),
             this, SLOT(onAvailablePackage(QSharedPointer<PackageKit::Package>)));
+    connect(t, SIGNAL(repoSignatureRequired(PackageKit::Client::SignatureInfo)),
+            this, SLOT(onRepoSignatureRequired(PackageKit::Client::SignatureInfo)));
     connect(t, SIGNAL(finished(PackageKit::Enum::Exit,uint)),
             this, SLOT(onFinished(PackageKit::Enum::Exit,uint)));
-    t->searchGroups(groupNames[group]); // , PackageKit::Enum::FilterNotInstalled);
-//    t->getPackages(PackageKit::Enum::FilterNotInstalled);
+    t->searchGroups(groupNames[group]);
 }
 
 void PackageManager::refreshRepos()
@@ -485,7 +491,7 @@ void PackageManager::onRepoDetail(const QString& repoId, const QString& descript
 void PackageManager::onRepoSignatureRequired(const PackageKit::Client::SignatureInfo &info)
 {
     PackageKit::Package *p = info.package.data();
-    qDebug() << Q_FUNC_INFO << p->name() << info.repoId;
+//    qDebug() << Q_FUNC_INFO << p->name() << info.repoId;
 
     PackageKit::Transaction *t = new PackageKit::Transaction(QString(), this);
     connect(t, SIGNAL(errorCode(PackageKit::Enum::Error,QString)),
@@ -500,6 +506,12 @@ void PackageManager::onRepoSignatureRequired(const PackageKit::Client::Signature
         if (origTransaction->role() == PackageKit::Enum::RoleRefreshCache) {
             m_refreshCacheTransaction = 0;
             refreshCache();
+        } else if (origTransaction->role() == PackageKit::Enum::RoleSearchGroup) {
+            uint group = m_packManContext.selectedGroup();
+            refreshAvailable(group);
+        } else if (origTransaction->role() == PackageKit::Enum::RoleGetUpdates) {
+            m_getUpdatesTransaction = 0;
+            refreshUpdate();
         }
     }
 

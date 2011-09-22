@@ -38,9 +38,6 @@ int main(int argc, char *argv[])
     qmlRegisterType<PackageMarkings>("Package", 1, 0, "PackageMarkings");
     qmlRegisterType<Repository>("Repository", 1,0, "Repository");
 
-    // As a workaround for BMC#20975 (Buttons in Refresh Cache dialog are not
-    // displayed on first app run) the qml file needs to be set twice.
-    viewer.setMainQmlFile(QLatin1String("qml/package-manager/main.qml"));
     viewer.setMainQmlFile(QLatin1String("qml/package-manager/main.qml"));
 
     viewer.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);

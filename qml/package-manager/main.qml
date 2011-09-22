@@ -11,7 +11,7 @@ PageStackWindow {
     //state: initialstate
 
     Component.onCompleted: {
-        // screen.allowedOrientations = Screen.Landscape | Screen.Portrait;
+        packageManager.refreshAll();
     }
 
     property string selectedGroupName
@@ -45,5 +45,4 @@ PageStackWindow {
     }
 
     initialPage: MainView { }
-
 }
