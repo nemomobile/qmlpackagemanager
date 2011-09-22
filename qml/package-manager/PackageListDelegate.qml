@@ -33,10 +33,10 @@ Item {
             if (packageItem.isCurrent)
                 showDetails();
             else
-                ListView.view.currentIndex = index
+                view.currentIndex = index
         }
         onPressAndHold: {
-            ListView.view.currentIndex = index
+            view.currentIndex = index
 //            console.log(mouse.x + " " + mouse.y);
             showContextMenu(mouse.x, mouse.y);
         }
