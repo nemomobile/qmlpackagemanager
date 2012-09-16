@@ -48,11 +48,11 @@ AppPageWithActionMenu {
 
     property alias filterInputVisible: searchIcon.checked
 
-    toolButtonsVisible: true
+//    toolButtonsVisible: true
     goButtonLongLabel: operationText + " selected (" + packageslist.model.markedcount + ")"
     goButtonShortLabel: operationText + " (" + packageslist.model.markedcount +")"
-    resetButtonEnabled: packageslist.model.markedcount > 0
-    goButtonEnabled: packageslist.model.markedcount > 0
+//    resetButtonEnabled: packageslist.model.markedcount > 0
+//    goButtonEnabled: packageslist.model.markedcount > 0
     // goButtonWidth: 300
 
     onReset: { packageslist.model.resetMarkings(); }
@@ -249,5 +249,16 @@ AppPageWithActionMenu {
 
         onRejected: { filter.text = ""; }
         onAccepted: { filter.text = ""; }
+    }
+
+    tools: currentTools
+    ToolBarLayout {
+        id: currentTools
+        visible: true
+        ToolIcon {
+            platformIconId: "toolbar-back"
+            onClicked: pageStack.pop()
+        }
+
     }
 }

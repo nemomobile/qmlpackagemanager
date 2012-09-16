@@ -59,3 +59,4 @@ HEADERS += \
     packagegroup.h \
     repository.h \
     networktest.h
+
