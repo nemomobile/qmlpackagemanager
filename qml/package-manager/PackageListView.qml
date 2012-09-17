@@ -48,11 +48,11 @@ AppPageWithActionMenu {
 
     property alias filterInputVisible: searchIcon.checked
 
+
 //    toolButtonsVisible: true
     goButtonLongLabel: operationText + " selected (" + packageslist.model.markedcount + ")"
     goButtonShortLabel: operationText + " (" + packageslist.model.markedcount +")"
-//    resetButtonEnabled: packageslist.model.markedcount > 0
-//    goButtonEnabled: packageslist.model.markedcount > 0
+
     // goButtonWidth: 300
 
     onReset: { packageslist.model.resetMarkings(); }
@@ -259,6 +259,23 @@ AppPageWithActionMenu {
             platformIconId: "toolbar-back"
             onClicked: pageStack.pop()
         }
+
+            ToolButton {
+                id: resetButton;
+                enabled: packageslist.model.markedcount > 0
+                width: isLong? resetButtonLongWidth: resetButtonShortWidth;
+                text: isLong? resetButtonLongLabel: resetButtonShortLabel;
+                onClicked: { view.reset(); }
+            }
+            ToolButton {
+                id: goButton;
+                enabled: packageslist.model.markedcount > 0
+                width: isLong? goButtonLongWidth: goButtonShortWidth;
+                text: isLong? goButtonLongLabel: goButtonShortLabel;
+                onClicked: { view.go(); }
+                anchors.right: parent.right
+                anchors.rightMargin: 20
+            }
 
     }
 }
