@@ -80,7 +80,6 @@ AppPageWithActionMenu {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.leftMargin: spacing
             anchors.rightMargin: spacing
-//            anchors.verticalCenterOffset: -40
 
             ImageButton{
                 btnText: "Download & Install";
@@ -141,7 +140,6 @@ AppPageWithActionMenu {
 
         ToolIcon {
             platformIconId: "toolbar-view-menu"
-//            anchors.right: (parent === undefined) ? undefined : parent.right
             onClicked: (mainMenu.status == DialogStatus.Closed) ? mainMenu.open() : mainMenu.close()
         }
 

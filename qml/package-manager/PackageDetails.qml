@@ -45,10 +45,6 @@ AppPageWithActionMenu {
 
     }
 
-//    onDeactivating: {
-//        delegate.mark(selected);
-//    }
-
     property Style platformStyle: LabelStyle { }
 
     Flickable {

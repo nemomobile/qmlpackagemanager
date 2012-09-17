@@ -49,11 +49,9 @@ AppPageWithActionMenu {
     property alias filterInputVisible: searchIcon.checked
 
 
-//    toolButtonsVisible: true
+
     goButtonLongLabel: operationText + " selected (" + packageslist.model.markedcount + ")"
     goButtonShortLabel: operationText + " (" + packageslist.model.markedcount +")"
-
-    // goButtonWidth: 300
 
     onReset: { packageslist.model.resetMarkings(); }
     onGo: {
