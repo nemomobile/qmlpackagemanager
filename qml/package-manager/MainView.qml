@@ -23,6 +23,7 @@
 
 import QtQuick 1.1
 import "utils.js" as Utils
+import "UIConstants.js" as UI
 import com.nokia.meego 1.0
 
 AppPageWithActionMenu {
@@ -61,7 +62,7 @@ AppPageWithActionMenu {
                 anchors.left: parent.left
                 anchors.leftMargin: 25
                 anchors.verticalCenter: parent.verticalCenter
-                font.pixelSize: 30
+                font.pixelSize: UI.FONT_XLARGE
                 text: "Packages"
                 color: "white"
             }

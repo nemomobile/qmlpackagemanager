@@ -193,7 +193,7 @@ AppPageWithActionMenu {
             text: view.operationText;
             anchors.right: parent.right;
             anchors.rightMargin: 20
-            onCheckedChanged: delegate.mark(selected);
+            onCheckedChanged: delegate.mark(checked);
         }
         ToolButton {
             visible: false

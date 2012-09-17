@@ -40,6 +40,7 @@ AppPageWithActionMenu {
 
     signal operationRequested
     signal operationConfirmed
+    signal checkedItemsRefresh
 
     property variant currentPackage: packageslist.currentItem? packageslist.currentItem.packageData: null
     property variant currentListDelegate: packageslist.currentItem
@@ -55,7 +56,10 @@ AppPageWithActionMenu {
 
     // goButtonWidth: 300
 
-    onReset: { packageslist.model.resetMarkings(); }
+    onReset: {
+        packageslist.model.resetMarkings();
+        view.checkedItemsRefresh();
+    }
     onGo: {
         prepareTransaction.open();
         view.operationRequested();

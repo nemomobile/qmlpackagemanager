@@ -31,39 +31,40 @@ Item {
     property alias text: input.text
     property int total
     property int filtered
+    function focus() {
+        input.forceActiveFocus();
+    }
 
     signal changed
 
     height: childrenRect.height
 
-    Label {
-        id: label
-        anchors.left:  parent.left
-        font.pixelSize: UI.FONT_LARGE
-        text: "Find: "
-    }
 
     TextField {
         id: input
         text: ""
-        anchors.left: label.right
-        anchors.right: clearButton.left
-        height: label.height + 4
+        placeholderText: "search"
+        width: parent.width
+        height: 50
         onTextChanged: filterInput.changed(); // on meego textChanged does not get emitted automatically
-    }
-
-
-    Button {
-        id: clearButton
-        text: "Clear"
-        height:  input.height
-        enabled: input.text != ""
-        width: 100
-        anchors.right: parent.right
-        onClicked: {
-            input.text = "";
-            filterInput.changed(); // on meego textChanged does not get emitted automatically
-        }
+        Image {
+                anchors { top: parent.top; right: parent.right; margins: 7 }
+                id: clearText
+                fillMode: Image.PreserveAspectFit
+                smooth: true;
+                visible: input.text
+                source: "../images/clear.svg"
+                height: parent.height - 14
+                width: parent.height - 14
+                MouseArea {
+                    id: clear
+                    anchors.fill: parent
+                    onClicked: {
+                        input.text = ""
+                        filterInput.changed();
+                    }
+                }
+            }
     }
 
 }

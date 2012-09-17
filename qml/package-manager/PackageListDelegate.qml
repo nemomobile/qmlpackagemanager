@@ -37,9 +37,8 @@ Item {
 
     anchors.left: parent.left
     anchors.right: parent.right
-    anchors.rightMargin: 20
 
-    height: (indexText.height*2 + 4)
+    height: 70
 
     Component.onCompleted: {
         pkg = packageObject;
@@ -47,16 +46,15 @@ Item {
 
     function mark(set) {
         ListView.view.model.mark(index, set);
+        cbMarked.checked = set;
     }
 
     MouseArea {
         id: mouseArea
         anchors.fill:  parent
         onClicked: {
-            if (packageItem.isCurrent)
-                showDetails();
-            else
-                view.currentIndex = index
+            view.currentIndex = index
+            showDetails();
         }
         onPressAndHold: {
             view.currentIndex = index
@@ -67,76 +65,50 @@ Item {
 
     Item {
         anchors.fill: parent
-        anchors.margins: 2
-
-        BorderImage {
-            id: background
-            border.top: 20
-            border.bottom: 20
-            border.right: 20
-            border.left: 20
-            anchors.fill: parent
-            source: isCurrent?
-                        mouseArea.pressed?
-                            "image://theme/meegotouch-button-background-pressed":
-                            "image://theme/meegotouch-list-background-selected" :
-                        mouseArea.pressed?
-                            "image://theme/meegotouch-list-background-pressed" :
-                            "image://theme/meegotouch-list-background"
-        }
-
         Rectangle {
-            x: parent.width - 25
-            anchors.verticalCenter: parent.verticalCenter
-            width: 20
-            height: 20
-            Loader { id: loader; sourceComponent: marker; anchors.fill:  parent }
-            visible: pkg.isMarked
-        }
+            anchors.fill: parent
+            color: mouseArea.pressed?Qt.rgba(0,0,0,0.1):"transparent"
 
-        Image {
-            id: iconRect
-            source: packageIcon? "image://icons/" + packageIcon: ""
-            width: 32
-            height: 32
-            anchors.left:  indexText.right
-            anchors.leftMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
-        }
+            Row{
 
-        Text {
-            id: indexText
-            text: index + 1
-            color: "darkgrey"
-            width: visible? 80: 0
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            font.pixelSize: UI.FONT_LARGE
-            horizontalAlignment: Text.AlignRight
-            visible: parent.width > 500
-        }
+                anchors.fill: parent
+                anchors.leftMargin: 10
+                anchors.rightMargin: 5
 
-        Text {
-            id: nameText
-            text: pkg.displayName
-            anchors.left: iconRect.right
-            anchors.leftMargin: 10
-            anchors.right: parent.right
-            elide: Text.ElideRight
-            font.pixelSize: UI.FONT_LARGE
-            anchors.top: isCurrent? parent.top: indexText.top
-        }
-
-       Text {
-            id: versionText
-            text: pkg.name + " " + pkg.version
-            elide: Text.ElideRight
-            visible: isCurrent
-            anchors.left: nameText.left
-            anchors.right: nameText.right
-            anchors.top: nameText.bottom
-            anchors.topMargin: 5
-            font.pixelSize: UI.FONT_LSMALL
+                spacing: 10
+                Image {
+                    id: iconRect
+                    source: packageIcon? "image://icons/" + packageIcon: ""
+                    width: 32
+                    height: 32
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Column {
+                    height: parent.height
+                    width: parent.width - 32 - 40 - 2*parent.spacing - parent.anchors.leftMargin - parent.anchors.rightMargin
+                    Text {
+                        width: parent.width
+                        id: nameText
+                        text: pkg.displayName
+                        elide: Text.ElideRight
+                        font.pixelSize: UI.FONT_LARGE
+                    }
+                   Text {
+                        width: parent.width
+                        id: versionText
+                        text: pkg.name + " " + pkg.version
+                        elide: Text.ElideRight
+                        color: "#777"
+                        font.pixelSize: UI.FONT_LSMALL
+                    }
+                }
+                CheckBox {
+                    id: cbMarked
+                    checked: pkg.isMarked
+                    anchors.verticalCenter: parent.verticalCenter
+                    onClicked: mark(checked);
+                }
+            }
         }
     }
 }
