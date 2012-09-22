@@ -46,7 +46,7 @@ Item {
 
     function mark(set) {
         ListView.view.model.mark(index, set);
-        cbMarked.checked = set;
+//        cbMarked.checked = set;
     }
 
 
@@ -105,9 +105,16 @@ Item {
                 }
                 CheckBox {
                     id: cbMarked
-                    checked: pkg.isMarked
                     anchors.verticalCenter: parent.verticalCenter
-                    onClicked: mark(checked);
+                    checked: pkg.isMarked;
+                    onCheckedChanged: {
+                        mark(checked);
+                    }
+                }
+                Binding {
+                    target: cbMarked
+                    property: 'checked'
+                    value: pkg.isMarked
                 }
             }
         }
