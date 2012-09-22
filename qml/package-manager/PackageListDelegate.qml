@@ -49,6 +49,7 @@ Item {
         cbMarked.checked = set;
     }
 
+
     MouseArea {
         id: mouseArea
         anchors.fill:  parent

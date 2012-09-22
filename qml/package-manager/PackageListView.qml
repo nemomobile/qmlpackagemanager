@@ -53,7 +53,9 @@ AppPageWithActionMenu {
     goButtonLongLabel: operationText + " selected (" + packageslist.model.markedcount + ")"
     goButtonShortLabel: operationText + " (" + packageslist.model.markedcount +")"
 
-    onReset: { packageslist.model.resetMarkings(); }
+    onReset: {
+        packageslist.model.resetMarkings();
+    }
     onGo: {
         prepareTransaction.open();
         view.operationRequested();
