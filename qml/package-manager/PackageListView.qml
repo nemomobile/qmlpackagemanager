@@ -48,14 +48,14 @@ AppPageWithActionMenu {
 
     property alias filterInputVisible: searchIcon.checked
 
-    toolButtonsVisible: true
+
+
     goButtonLongLabel: operationText + " selected (" + packageslist.model.markedcount + ")"
     goButtonShortLabel: operationText + " (" + packageslist.model.markedcount +")"
-    resetButtonEnabled: packageslist.model.markedcount > 0
-    goButtonEnabled: packageslist.model.markedcount > 0
-    // goButtonWidth: 300
 
-    onReset: { packageslist.model.resetMarkings(); }
+    onReset: {
+        packageslist.model.resetMarkings();
+    }
     onGo: {
         prepareTransaction.open();
         view.operationRequested();
@@ -70,7 +70,7 @@ AppPageWithActionMenu {
         anchors.right: parent.right
         anchors.top: filter.visible? filter.bottom: titleArea.bottom
         anchors.bottom: parent.bottom
-        anchors.margins: 10
+        anchors.topMargin: 5
     }
 
     Item {
@@ -166,41 +166,49 @@ AppPageWithActionMenu {
         }
     }
 
-    Item {
+    Rectangle {
         id: titleArea
-        height:  childrenRect.height
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right:  parent.right
-        anchors.leftMargin: 20
-        anchors.rightMargin: 20
-        Label {
-            id: titleLabel
-            text: view.pageTitle
-            font.pixelSize: UI.FONT_LARGE
-            anchors.verticalCenter: searchIcon.verticalCenter
+        height:  80
+        width: parent.width
+        color: "#ff6600"
+        Row{
+            anchors.fill: parent
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.leftMargin: 25
+            spacing: 20
+            Text {
+                text: view.pageTitle
+                font.pixelSize: UI.FONT_XLARGE
+                color: "white"
+                anchors.verticalCenter: parent.verticalCenter
+            }
+            Text {
+                id: statsText
+                font.pixelSize: UI.FONT_DEFAULT
+                text: "(" + (filterInputVisible? listModel.filteredcount + "/": "") + listModel.totalcount + ")"
+                color: "white"
+                anchors.verticalCenter: parent.verticalCenter
+            }
         }
-
-        Label {
-            id: statsText
-            anchors.left: titleLabel.right
-            anchors.leftMargin: 20
-            anchors.bottom: titleLabel.bottom
-            height: titleLabel.height
-            text: "(" + (filterInputVisible? listModel.filteredcount + "/": "") + listModel.totalcount + ")"
-
-        }
-
         ToolButton {
             id: searchIcon
             checkable: true
             checked: false
             height:  48
             width: 48
+            anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
-            iconSource: "image://theme/icon-m-common-search"
-            onCheckedChanged: { listModel.setFilterString(checked? filter.text: ""); }
+            anchors.rightMargin: 30
+
+            iconSource: "../images/icon-m-toolbar-search-white-selected.png"
+            onCheckedChanged: { listModel.setFilterString(checked? filter.text: ""); filter.focus() }
+            platformStyle: ButtonStyle {
+                                    background: "../images/void.png"
+                                    pressedBackground: "../images/void.png"
+                                    checkedBackground: "../images/void.png"
+                                }
         }
+
     }
 
     FilterInput {
@@ -249,5 +257,33 @@ AppPageWithActionMenu {
 
         onRejected: { filter.text = ""; }
         onAccepted: { filter.text = ""; }
+    }
+
+    tools: currentTools
+    ToolBarLayout {
+        id: currentTools
+        visible: true
+        ToolIcon {
+            platformIconId: "toolbar-back"
+            onClicked: pageStack.pop()
+        }
+
+            ToolButton {
+                id: resetButton;
+                enabled: packageslist.model.markedcount > 0
+                width: isLong? resetButtonLongWidth: resetButtonShortWidth;
+                text: isLong? resetButtonLongLabel: resetButtonShortLabel;
+                onClicked: { view.reset(); }
+            }
+            ToolButton {
+                id: goButton;
+                enabled: packageslist.model.markedcount > 0
+                width: isLong? goButtonLongWidth: goButtonShortWidth;
+                text: isLong? goButtonLongLabel: goButtonShortLabel;
+                onClicked: { view.go(); }
+                anchors.right: parent.right
+                anchors.rightMargin: 20
+            }
+
     }
 }

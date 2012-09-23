@@ -30,6 +30,8 @@ AppPageWithActionMenu {
 
     property Style platformStyle: LabelStyle{}
 
+    tools: currentTools
+
     Flickable {
         id: flick
         anchors.fill:  parent
@@ -123,4 +125,14 @@ AppPageWithActionMenu {
     }
 
     ScrollDecorator { flickableItem: flick }
+
+    ToolBarLayout {
+        id: currentTools
+        visible: true
+        ToolIcon {
+            platformIconId: "toolbar-back"
+            onClicked: pageStack.pop()
+        }
+
+    }
 }
