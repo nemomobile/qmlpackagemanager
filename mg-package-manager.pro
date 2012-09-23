@@ -4,7 +4,9 @@ TARGET=mg-package-manager
 # Add more folders to ship with the application, here
 folder_01.source = qml/package-manager
 folder_01.target = qml
-DEPLOYMENTFOLDERS = folder_01
+images.source = qml/images
+images.target = qml
+DEPLOYMENTFOLDERS = folder_01 images
 
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
