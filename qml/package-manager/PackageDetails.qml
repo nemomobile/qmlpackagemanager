@@ -42,10 +42,7 @@ AppPageWithActionMenu {
     onItemChanged: {
         flick.contentY = 0;
         selected = item.packageIsMarked;
-    }
 
-    onDeactivating: {
-        delegate.mark(selected);
     }
 
     property Style platformStyle: LabelStyle { }
@@ -177,42 +174,25 @@ AppPageWithActionMenu {
         }
     }
 
-    Rectangle {
-        anchors.fill:  markBoxArea
-        anchors.margins: -15
-        radius: 2
-        color: "lightgrey"
-
-        MouseArea {
-            anchors.fill:  parent
-            onClicked: {
-                markBox.checked = !markBox.checked;
-            }
-        }
-    }
-
-    Column {
-        id: markBoxArea
-        spacing: 8
-
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.rightMargin: 50
-
-        Text {
-            id: markText
-            font.pixelSize: UI.FONT_XLARGE
-            text: view.operationText
-        }
-
-        Item {
-            width: 40
-            height: 40
-            anchors.horizontalCenter: parent.horizontalCenter
-            CheckBox { id: markBox }
-        }
-
-    }
-
     ScrollDecorator { flickableItem: flick }
+
+    tools: currentTools
+    ToolBarLayout {
+        id: currentTools
+        visible: true
+        ToolIcon {
+            platformIconId: "toolbar-back"
+            onClicked: pageStack.pop()
+        }
+        CheckBox {
+            id: markBox;
+            text: view.operationText;
+            anchors.right: parent.right;
+            anchors.rightMargin: 20
+            onCheckedChanged: delegate.mark(checked);
+        }
+        ToolButton {
+            visible: false
+        }
+    }
 }

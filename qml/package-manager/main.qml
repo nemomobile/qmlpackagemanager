@@ -21,17 +21,16 @@
  *
  */
 
-import QtQuick 1.0
-import "utils.js" as Utils
+import QtQuick 1.1
 import com.nokia.meego 1.0
 
 PageStackWindow {
     id: window
 
-    platformStyle: PageStackWindowStyle { id: defaultStyle }
+//    platformStyle: PageStackWindowStyle { id: defaultStyle }
 
     anchors.centerIn: parent
-    //state: initialstate
+    state: initialstate
 
     Component.onCompleted: {
         packageManager.refreshAll();

@@ -67,5 +67,14 @@ AppPageWithActionMenu {
             }
         }
     }
+    tools: currentTools
+    ToolBarLayout {
+        id: currentTools
+        visible: true
+        ToolIcon {
+            platformIconId: "toolbar-back"
+            onClicked: pageStack.pop()
+        }
 
+    }
 }
