@@ -1,0 +1,35 @@
+Name:    qmlpackagemanager
+Summary: Package Manager UI for Nemo 
+Version: 0.2.2
+Release: 1
+Group: Applications/System
+License: LGPLv2.1
+URL: https://github.com/nemomobile/qmlpackagemanager
+Sources:
+- "%{name}-%{version}.tar.bz2"
+Provides:
+    - mg-package-manager > 0.2.2
+Obsoletes:
+    - mg-package-manager <= 0.2.2
+
+Description: Package management UI for Nemo
+Configure: none
+Builder: qmake
+
+PkgConfigBR:
+    - QtCore >= 4.7.0
+    - QtDeclarative
+    - packagekit-qt
+
+Requires:
+    - qt-components
+    - PackageKit >= 0.6.11
+    - PackageKit-libs >= 0.6.11
+    - PackageKit-zypp >= 0.6.11
+
+Files:
+    - "%{_bindir}/mg-package-manager"
+    - "%{_datadir}/applications/mg-package-manager.desktop"
+    - "%{_datadir}/mg-package-manager/qml/*"
+    - "%{_datadir}/pixmaps/mg-package-manager.png"
+

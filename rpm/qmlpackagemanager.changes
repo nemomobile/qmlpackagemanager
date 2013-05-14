@@ -1,0 +1,51 @@
+* Fri Oct 05 2012 John Brooks <john.brooks@dereferenced.net> - 0.2.2
+- Lots of UI cleanup (from qwazix)
+- Upstream mg-package-manager-0.2.1-link-with-missing-libs.patch to fork
+- Rewrite packaging for spectacle
+- Removed unused screenshot file
+
+* Wed Feb 01 2012 Marko Saukko <marko.saukko@gmail.com> - 0.2.1
+- Added mg-package-manager_screenshot.png
+- Minor packaging cleanups.
+
+* Tue Dec 20 2011 Marko Saukko <marko.saukko@cybercom.com> - 0.2.1
+- Fixed linkin problem with newer toolchain.
+  Patch: mg-package-manager-0.2.1-link-with-missing-libs.patch
+
+* Thu Sep 22 2011 Kyösti Ranto <kyosti.ranto@digia.com> - 0.2.1
+- Fix for BMC#23137 - [CE] Unable to open package information.
+- Fix for BMC#18898 - pacrunner fails to update due to unsigned
+                      CE-testing repo
+
+* Tue Aug 23 2011 Kyösti Ranto <kyosti.ranto@digia.com> - 0.2.0
+- Replaced meego-ux-components with qt-components
+
+* Tue Aug 09 2011 Kyösti Ranto <kyosti.ranto@digia.com> - 0.1.6
+- Fix for BMC#20975 - [CE] Buttons in Refresh Cache dialog are
+                      not displayed on first app run
+
+* Thu Jun 30 2011 Kyösti Ranto <kyosti.ranto@digia.com> - 0.1.5
+- Fix for BMC#20387 - [CE] Refresh Cache succeeds without network 
+                      connection
+
+* Wed Jun 29 2011 Kyösti Ranto <kyosti.ranto@digia.com> - 0.1.4
+- Fix for BMC#20268 - [CE] Package details displayed not fully
+
+* Tue Jun 21 2011 Kyösti Ranto <kyosti.ranto@digia.com> - 0.1.3
+- Fix for BMC#19660 - [CE] Exit button does not work in Packages
+                           application
+- Fix for BMC#19592 - [CE] Text in package details is overlapped
+
+* Mon Jun 20 2011 Kyösti Ranto <kyosti.ranto@digia.com> - 0.1.2
+- Partial fix for BMC#18898: 
+   Added better error message, added silent acceptance of new
+   signature
+- New application icon
+
+* Wed Jun 15 2011 Kyösti Ranto <kyosti.ranto@digia.com> - 0.1.1
+- Added Repository management (list, enable, disable)
+- Added Help
+
+* Wed Jun 01 2011 Kyösti Ranto <kyosti.ranto@digia.com> - 0.1.0
+- Initial version
+
