@@ -24,7 +24,7 @@
 #ifndef PACKAGEMANAGER_H
 #define PACKAGEMANAGER_H
 
-#include "qmlapplicationviewer.h"
+//#include "qmlapplicationviewer.h"
 
 #include "packmancontext.h"
 #include "packagemodel.h"
@@ -33,8 +33,9 @@
 
 #include <QObject>
 #include <QStringList>
-#include <QPackageKit>
-#include <QDeclarativeContext>
+
+#include <QQmlContext>
+#include <QQuickView>
 #include <QSortFilterProxyModel>
 
 class FilterPackageModel;
@@ -46,7 +47,7 @@ class PackageManager : public QObject
 public:
     static PackageManager *instance();
 
-    explicit PackageManager(QmlApplicationViewer *viewer, QObject *parent = 0);
+    explicit PackageManager(QQuickView *viewer, QObject *parent = 0);
 
 public slots:
     void refreshCache();
@@ -62,25 +63,25 @@ public slots:
     void installMarkedPackages(bool simulate, bool onlyTrusted);
 
 private slots:
-    void onPackage(QSharedPointer<PackageKit::Package> packagePtr);
-    void onInstalledPackage(QSharedPointer<PackageKit::Package> packagePtr);
-    void onUpdateAvailablePackage(QSharedPointer<PackageKit::Package> packagePtr);
-    void onAvailablePackage(QSharedPointer<PackageKit::Package> packagePtr);
-    void onFinished(PackageKit::Enum::Exit,uint);
+    void onPackage(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary);
+    void onInstalledPackage(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary);
+    void onUpdateAvailablePackage(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary);
+    void onAvailablePackage(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary);
+    void onFinished(PackageKit::Transaction::Exit status);
 
     void onChanged();
     void onCategory(const QString &parent_id, const QString &cat_id, const QString &name, const QString &summary, const QString &icon);
-    void onErrorCode(PackageKit::Enum::Error error, const QString& details);
-    void onEulaRequired(const PackageKit::Client::EulaInfo &info);
-    void onMediaChangeRequired(PackageKit::Enum::MediaType type, const QString& id, const QString& text);
-    void onFiles(const QSharedPointer<PackageKit::Package> &package, const QStringList &filenames);
-    void onMessage(PackageKit::Enum::Message type, const QString &message);
+    void onErrorCode(uint error, const QString &details);
+    //void onEulaRequired(const PackageKit::Client::EulaInfo &info);
+    //void onMediaChangeRequired(PackageKit::Enum::MediaType type, const QString& id, const QString& text);
+    //void onFiles(const QSharedPointer<PackageKit::Package> &package, const QStringList &filenames);
+    void onMessage(uint type, const QString &message);
     void onRepoDetail(const QString& repoId, const QString& description, bool enabled);
-    void onRepoSignatureRequired(const PackageKit::Client::SignatureInfo &info);
-    void onRequireRestart(PackageKit::Enum::Restart type, const QSharedPointer<PackageKit::Package> &package);
+    void onRepoSignatureRequired(const QString &pid, const QString &repoName, const QString &keyUrl, const QString &keyUserid, const QString &keyId, const QString &keyFingerprint, const QString &keyTimestamp, uint type);
+    //void onRequireRestart(PackageKit::Enum::Restart type, const QSharedPointer<PackageKit::Package> &package);
 
-    void onRefreshCacheFinished(PackageKit::Enum::Exit,uint);
-    void onRefreshReposFinished(PackageKit::Enum::Exit,uint);
+    void onRefreshCacheFinished(PackageKit::Transaction::Exit status, uint runtime);
+    void onRefreshReposFinished(PackageKit::Transaction::Exit status, uint runtime);
 
 private:
     bool testNetworkConnection(TransactionWrapper *tw);
@@ -90,8 +91,8 @@ private:
 
     PackManContext m_packManContext;
 
-    QmlApplicationViewer *m_viewer;
-    PackageKit::Client *m_packageKit;
+    QQuickView *m_viewer;
+    //PackageKit::Client *m_packageKit;
 
     PackageKit::Transaction *m_refreshCacheTransaction;
     PackageKit::Transaction *m_refreshReposTransaction;
@@ -99,7 +100,7 @@ private:
     PackageKit::Transaction *m_getUpdatesTransaction;
     PackageKit::Transaction *m_searchGroupsTransaction;
 
-    QDeclarativeContext *m_qmlContext;
+    QQmlContext *m_qmlContext;
 
     PackageModel *m_installedPackagesModel;
     PackageModel *m_availablePackagesModel;

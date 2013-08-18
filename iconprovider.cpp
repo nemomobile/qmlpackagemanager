@@ -28,7 +28,7 @@
 #include <QDebug>
 
 IconProvider::IconProvider() :
-    QDeclarativeImageProvider(QDeclarativeImageProvider::Pixmap)
+    QQuickImageProvider(QQuickImageProvider::Pixmap)
 {
 }
 

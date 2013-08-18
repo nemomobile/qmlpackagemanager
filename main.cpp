@@ -21,21 +21,22 @@
  *
  */
 
-#include <QtGui/QApplication>
-#include "qmlapplicationviewer.h"
+#include <QGuiApplication>
+//#include "qmlapplicationviewer.h"
 #include "packagemanager.h"
 #include "iconprovider.h"
 
 #include <QObject>
 #include <QString>
 #include <QMainWindow>
-#include <QDeclarativeView>
+#include <QQuickView>
 #include <QGraphicsObject>
 
 #include <QDebug>
-#include <QDeclarativeContext>
-#include <QDeclarativeEngine>
-#include <QtDeclarative>
+#include <QQmlContext>
+#include <QQmlEngine>
+#include <QApplication>
+
 
 #include "package.h"
 #include "packagegroup.h"
@@ -46,7 +47,7 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    QmlApplicationViewer viewer;
+    QQuickView viewer;
 
     PackageManager *pm = new PackageManager(&viewer);
 
@@ -54,7 +55,7 @@ int main(int argc, char *argv[])
     context->setContextProperty("initialstate", "mainview");
     context->setContextProperty("mainWindow", &viewer);
     viewer.engine()->addImageProvider(QLatin1String("icons"), new IconProvider);
-    viewer.engine()->addImportPath("/usr/lib/qt4/imports");
+    viewer.engine()->addImportPath("/usr/lib/qt5/imports");
 
     qmlRegisterType<Package>("Package", 1,0, "Package");
     qmlRegisterType<PackageGroup>("Package", 1,0, "PackageGroup");
@@ -63,7 +64,7 @@ int main(int argc, char *argv[])
 
     viewer.setMainQmlFile(QLatin1String("qml/package-manager/main.qml"));
 
-    viewer.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
+    viewer.setOrientation(QQuickView::ScreenOrientationAuto);
 
     viewer.showExpanded();
 

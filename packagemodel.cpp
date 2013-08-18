@@ -26,9 +26,15 @@
 #include "packagemanager.h"
 
 #include <QHash>
-#include <QtDeclarative>
+#include <QQmlContext>
+//#include <QtDeclarative>
 
 // ------------------------------------------------------------
+
+void PackageModel::setRoleNames(QHash<int, QByteArray> roles)
+{
+    m_roles = roles;
+}
 
 PackageModel::PackageModel(QObject *parent) :
     QAbstractListModel(parent)
@@ -111,15 +117,15 @@ QVariant PackageModel::data(const QModelIndex &index, int role) const
     if (role == PackageObjectRole)
         return qVariantFromValue(object);
 
-    PackageKit::Package *data = package->basicInfo();
-    PackageKit::Package *updateData = package->updateBasicInfo();
-    PackageKit::Package::Details *details = package->details();
-    PackageKit::Package::Details *updateDetails = package->updateDetails();
+    QSharedPointer <PackageInfo> data =  package->package();
+    PackageInfo *updateData = package->updateBasicInfo();
+    DetailsInfo *details = package->details();
+    DetailsInfo *updateDetails = package->updateDetails();
 
-    if (!data)
+    if (data.isNull())
         return QVariant("");
 
-    PackageKit::Client::UpdateInfo *updateInfo = package->updateInfo();
+    UpdateDetails *updateInfo = package->updateInfo();
 
     int group = (role & DetailMask);
     switch (group) {
@@ -143,13 +149,13 @@ QVariant PackageModel::data(const QModelIndex &index, int role) const
     case IsMarkedRole:      return QVariant(package->isMarked());
 
     case IdRole:        return data->id();
-    case NameRole:      return data->name();
-    case VersionRole:   return data->version();
-    case ArchRole:      return data->arch();
-    case DataRole:      return data->data();
-    case SummaryRole:   return data->summary();
-    case InfoRole:      return data->info();
-    case IconRole:      return data->iconPath();
+    case NameRole:      return PackageKit::Transaction::packageName(data.data()->id());
+    case VersionRole:   return PackageKit::Transaction::packageVersion(data.data()->id());
+    case ArchRole:      return PackageKit::Transaction::packageArch(data.data()->id());
+    case DataRole:      return PackageKit::Transaction::packageData(data.data()->id());
+    case SummaryRole:   return data.data()->summary();
+    case InfoRole:      return data.data()->info();
+    case IconRole:      return PackageKit::Transaction::packageIcon(data.data()->id());
 
     case IsUpdateAvailableRole:
         return package->isUpdateAvailable();
@@ -157,19 +163,19 @@ QVariant PackageModel::data(const QModelIndex &index, int role) const
     case UpdateIdRole:
         return updateData? QVariant(updateData->id()): QVariant("");
     case UpdateNameRole:
-        return updateData? QVariant(updateData->name()): QVariant("");
+        return updateData? QVariant(PackageKit::Transaction::packageName(updateData->id())): QVariant("");
     case UpdateVersionRole:
-        return updateData? QVariant(updateData->version()): QVariant("");
+        return updateData? QVariant(PackageKit::Transaction::packageVersion(updateData->id())): QVariant("");
     case UpdateArchRole:
-        return updateData? QVariant(updateData->arch()): QVariant("");
+        return updateData? QVariant(PackageKit::Transaction::packageArch(updateData->id())): QVariant("");
     case UpdateDataRole:
-        return updateData? QVariant(updateData->data()): QVariant("");
+        return updateData? QVariant(PackageKit::Transaction::packageData(updateData->id())): QVariant("");
     case UpdateSummaryRole:
         return updateData? QVariant(updateData->summary()): QVariant("");
     case UpdateInfoRole:
         return updateData? QVariant(updateData->info()): QVariant("");
     case UpdateIconRole:
-        return updateData? QVariant(updateData->iconPath()): QVariant("");
+        return updateData? QVariant(PackageKit::Transaction::packageIcon(updateData->id())): QVariant("");
 
     case DetailsLicenseRole:
         return details? QVariant(details->license()): QVariant("");
@@ -233,7 +239,7 @@ QVariant PackageModel::data(const QModelIndex &index, int role) const
 
 }
 
-void PackageModel::addPackage(QSharedPointer<PackageKit::Package> packagePtr, bool isUpdatePackage)
+void PackageModel::addPackage(QSharedPointer<PackageInfo> packagePtr, bool isUpdatePackage)
 {
     // qDebug() << Q_FUNC_INFO << isUpdatePackage;
 
@@ -274,7 +280,7 @@ void PackageModel::clear()
     emit countChanged();
 }
 
-Package *PackageModel::findPackage(QSharedPointer<PackageKit::Package> packagePtr)
+Package *PackageModel::findPackage(QSharedPointer<PackageInfo> packagePtr)
 {
     PackageKit::Package *p1 = packagePtr.data();
     QString name1 = p1? p1->name(): QString();

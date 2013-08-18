@@ -36,17 +36,31 @@ TransactionWrapper::TransactionWrapper(PackageKit::Transaction *transaction, boo
         connect(m_transaction, SIGNAL(changed()), this, SLOT(onChanged()));
 
         if (readPackages)
-            connect(m_transaction, SIGNAL(package(QSharedPointer<PackageKit::Package>)),
-                    this, SLOT(onPackage(QSharedPointer<PackageKit::Package>)));
+            connect(m_transaction, SIGNAL(package(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary)),
+                    this, SLOT(onPackage(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary)));
 
-        connect(m_transaction, SIGNAL(message(PackageKit::Enum::Message,QString)),
-                this, SLOT(onMessage(PackageKit::Enum::Message,QString)));
-        connect(m_transaction, SIGNAL(errorCode(PackageKit::Enum::Error,QString)),
-                this, SLOT(onErrorCode(PackageKit::Enum::Error,QString)));
-        connect(m_transaction, SIGNAL(repoSignatureRequired(PackageKit::Client::SignatureInfo)),
-                this, SLOT(onRepoSignatureRequired(PackageKit::Client::SignatureInfo)));
-        connect(m_transaction, SIGNAL(finished(PackageKit::Enum::Exit,uint)),
-                this, SLOT(onFinished(PackageKit::Enum::Exit,uint)));
+        connect(m_transaction, SIGNAL(message(PackageKit::Transaction::Message type, const QString &message)),
+                this, SLOT(onMessage(PackageKit::Transaction::Message type, const QString &message)));
+        connect(m_transaction, SIGNAL(errorCode(PackageKit::Transaction::Error error, const QString &details)),
+                this, SLOT(onErrorCode(PackageKit::Transaction::Error error, const QString &details)));
+        connect(m_transaction, SIGNAL(repoSignatureRequired(const QString &packageID,
+                                                            const QString &repoName,
+                                                            const QString &keyUrl,
+                                                            const QString &keyUserid,
+                                                            const QString &keyId,
+                                                            const QString &keyFingerprint,
+                                                            const QString &keyTimestamp,
+                                                            PackageKit::Transaction::SigType type)),
+                this, SLOT(onRepoSignatureRequired(const QString &packageID,
+                                                   const QString &repoName,
+                                                   const QString &keyUrl,
+                                                   const QString &keyUserid,
+                                                   const QString &keyId,
+                                                   const QString &keyFingerprint,
+                                                   const QString &keyTimestamp,
+                                                   PackageKit::Transaction::SigType type)));
+        connect(m_transaction, SIGNAL(finished(PackageKit::Transaction::Exit status, uint runtime)),
+                this, SLOT(onFinished(PackageKit::Transaction::Exit status, uint runtime)));
         connect(m_transaction, SIGNAL(destroyed()), this, SLOT(onDestroyed()));
     }
 
@@ -73,13 +87,13 @@ void TransactionWrapper::onChanged()
     emit changed();
 }
 
-void TransactionWrapper::onPackage(QSharedPointer<PackageKit::Package> packagePtr)
+void TransactionWrapper::onPackage(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary)
 {
 //    qDebug() << Q_FUNC_INFO << (*packagePtr).name();
-    if (packagePtr.isNull())
+    if (info.isNull())
         m_currentPackage = QString();
     else
-        m_currentPackage = (*packagePtr).name();
+        m_currentPackage = (*info).name();
 
     emit changed();
 }
@@ -91,7 +105,7 @@ void TransactionWrapper::onMessage(PackageKit::Enum::Message type, const QString
     emit changed();
 }
 
-void TransactionWrapper::onErrorCode(PackageKit::Enum::Error error, const QString &details)
+void TransactionWrapper::onErrorCode(PackageKit::Transaction::Error error, const QString &details)
 {
 //    qDebug() << Q_FUNC_INFO;
     m_errorCode = error;
@@ -101,14 +115,21 @@ void TransactionWrapper::onErrorCode(PackageKit::Enum::Error error, const QStrin
     emit changed();
 }
 
-void TransactionWrapper::onRepoSignatureRequired(PackageKit::Client::SignatureInfo info)
+void TransactionWrapper::onRepoSignatureRequired(const QString &packageID,
+                                                 const QString &repoName,
+                                                 const QString &keyUrl,
+                                                 const QString &keyUserid,
+                                                 const QString &keyId,
+                                                 const QString &keyFingerprint,
+                                                 const QString &keyTimestamp,
+                                                 PackageKit::Transaction::SigType type)
 {
 //    qDebug() << Q_FUNC_INFO;
 //    qDebug() << (*info.package).id();
 //    qDebug() << info.keyId << info.keyUrl << info.keyFingerprint << info.type << info.repoId;
 }
 
-void TransactionWrapper::onFinished(PackageKit::Enum::Exit status, uint runtime)
+void TransactionWrapper::onFinished(PackageKit::Transaction::Exit status, uint runtime)
 {
 //    qDebug() << Q_FUNC_INFO << status << runtime;
 

@@ -24,9 +24,10 @@
 #ifndef ICONPROVIDER_H
 #define ICONPROVIDER_H
 
-#include <QDeclarativeImageProvider>
+#include <QQuickImageProvider>
+#include <QPixmap>
 
-class IconProvider : public QDeclarativeImageProvider
+class IconProvider : public QQuickImageProvider
 {
 public:
     explicit IconProvider();

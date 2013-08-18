@@ -26,7 +26,7 @@
 
 #include <QObject>
 
-#include <QPackageKit>
+#include "transaction.h"
 
 class TransactionWrapper : public QObject
 {
@@ -63,18 +63,18 @@ public slots:
 
 private slots:
     void onChanged();
-    void onPackage(QSharedPointer<PackageKit::Package> packagePtr);
-    void onErrorCode(PackageKit::Enum::Error error, const QString& details);
-    void onMessage(PackageKit::Enum::Message type, const QString &message);
-    void onRepoSignatureRequired(PackageKit::Client::SignatureInfo info);
-    void onFinished(PackageKit::Enum::Exit status,uint runtime);
+    void onPackage(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary);
+    void onErrorCode(PackageKit::Transaction::Error error, const QString &details);
+    void onMessage(PackageKit::Transaction::Message type, const QString &message);
+    void onRepoSignatureRequired(const QString &packageID, const QString &repoName, const QString &keyUrl, const QString &keyUserid, const QString &keyId, const QString &keyFingerprint, const QString &keyTimestamp, PackageKit::Transaction::SigType type);
+    void onFinished(PackageKit::Transaction::Exit status, uint runtime);
     void onDestroyed();
 
 private:
     PackageKit::Transaction *m_transaction;
 
     QString m_errorText;
-    PackageKit::Enum::Error m_errorCode;
+    PackageKit::Transaction::Error m_errorCode;
 
     QString m_state;
 

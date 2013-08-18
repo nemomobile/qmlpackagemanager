@@ -26,7 +26,8 @@
 
 #include <QObject>
 #include <QList>
-#include <QPackageKit>
+#include "packageinfo.h"
+
 
 class Package;
 
@@ -38,7 +39,7 @@ public:
 
     QList<Package*> *list();
 
-    void operator<<(QSharedPointer<PackageKit::Package> packagePtr);
+    void operator<<(QSharedPointer<PackageInfo> packagePtr);
 
 signals:
     void changed();

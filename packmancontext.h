@@ -30,9 +30,9 @@
 #include "packagegroup.h"
 #include "repository.h"
 
-#include <QPackageKit>
+//#include <QPackageKit>
 #include <QObject>
-#include <QDeclarativeListProperty>
+#include <QQmlListProperty>
 
 class QAbstractItemModel;
 class Package;
@@ -115,19 +115,19 @@ public:
     QObject *installPackagesTransaction();
 
     void setPackagesToBeInstalled(PackageList *list);
-    QDeclarativeListProperty<Package> packagesToBeInstalled();
+    QQmlListProperty<Package> packagesToBeInstalled();
 
     void setPackagesToBeUpdated(PackageList *list);
-    QDeclarativeListProperty<Package> packagesToBeUpdated();
+    QQmlListProperty<Package> packagesToBeUpdated();
 
     void setPackagesToBeRemoved(PackageList *list);
-    QDeclarativeListProperty<Package> packagesToBeRemoved();
+    QQmlListProperty<Package> packagesToBeRemoved();
 
     void setPackageGroups(PackageGroupList *list);
-    QDeclarativeListProperty<PackageGroup> packageGroups();
+    QQmlListProperty<PackageGroup> packageGroups();
 
     void setRepositories(RepositoryList *list);
-    QDeclarativeListProperty<Repository> repositories();
+    QQmlListProperty<Repository> repositories();
 
 signals:
     void packageManagerChanged();

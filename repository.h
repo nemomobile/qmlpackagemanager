@@ -25,7 +25,8 @@
 #define REPOSITORY_H
 
 #include <QObject>
-#include <QPackageKit>
+#include "transaction.h"
+
 
 class Repository : public QObject
 {
@@ -55,7 +56,7 @@ public slots:
     void setEnabled(bool enabled);
 
 private slots:
-    void onFinished(PackageKit::Enum::Exit exitCode, uint duration);
+    void onFinished(PackageKit::Transaction::Exit status, uint runtime);
 
 private:
     QString m_id;

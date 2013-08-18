@@ -25,7 +25,7 @@
 #define PACKAGEGROUP_H
 
 #include <QObject>
-#include <QPackageKit>
+
 
 class PackageGroup : public QObject
 {

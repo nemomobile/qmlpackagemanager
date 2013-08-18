@@ -27,8 +27,10 @@ symbian:TARGET.CAPABILITY += NetworkServices
 # MOBILITY +=
 
 CONFIG += link_pkgconfig
-PKGCONFIG += packagekit-qt
-QT += network
+#PKGCONFIG += PackageKit-Qt5
+QT += dbus network qml quick widgets
+
+INCLUDEPATH += /usr/include/PackageKit/packagekit-qt5/
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
@@ -43,11 +45,14 @@ SOURCES += main.cpp \
     packagelist.cpp \
     packagegroup.cpp \
     repository.cpp \
-    networktest.cpp
+    networktest.cpp \
+    packageinfo.cpp \
+    detailsinfo.cpp \
+    updatedetails.cpp
 
 # Please do not modify the following two lines. Required for deployment.
-include(qmlapplicationviewer/qmlapplicationviewer.pri)
-qtcAddDeployment()
+#include(qmlapplicationviewer/qmlapplicationviewer.pri)
+#qtcAddDeployment()
 
 HEADERS += \
     packagemodel.h \
@@ -61,5 +66,8 @@ HEADERS += \
     packagelist.h \
     packagegroup.h \
     repository.h \
-    networktest.h
+    networktest.h \
+    packageinfo.h \
+    detailsinfo.h \
+    updatedetails.h
 

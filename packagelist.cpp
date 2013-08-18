@@ -32,7 +32,7 @@ PackageList::PackageList(QObject *parent) :
 {
 }
 
-void PackageList::operator<<(QSharedPointer<PackageKit::Package> packagePtr)
+void PackageList::operator<<(QSharedPointer<PackageInfo> packagePtr)
 {
     m_list << new Package(packagePtr, false, this);
     emit changed();

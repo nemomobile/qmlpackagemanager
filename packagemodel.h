@@ -26,10 +26,13 @@
 
 #include <QAbstractListModel>
 #include <QList>
-#include <QPackageKit>
+
 
 #include "package.h"
 #include "packagemarkings.h"
+#include "packageinfo.h"
+#include <QTimer>
+
 
 class PackageModel : public QAbstractListModel
 {
@@ -38,6 +41,7 @@ class PackageModel : public QAbstractListModel
     Q_PROPERTY(int count READ rowCount NOTIFY countChanged)
     Q_PROPERTY(int markedCount READ markedCount NOTIFY markedCountChanged)
 
+    void setRoleNames(QHash<int, QByteArray> roles);
 public:
 
     enum PackageRoles {
@@ -107,13 +111,13 @@ public:
 
     QVariant data(const QModelIndex &index, int role) const;
 
-    void addPackage(QSharedPointer<PackageKit::Package> packagePtr, bool isUpdatePackage = false);
+    void addPackage(QSharedPointer<PackageInfo> packagePtr, bool isUpdatePackage = false);
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
     int markedCount();
 
     Package *findPackage(const QString &name);
-    Package *findPackage(QSharedPointer<PackageKit::Package> packagePtr);
+    Package *findPackage(QSharedPointer<PackageInfo> packagePtr);
 
     void clear();
 
@@ -140,6 +144,7 @@ private:
     QList<Package*> m_packageBuffer;
     PackageMarkings m_packageMarkings;
     QTimer m_addTimer;
+    QHash<int, QByteArray> m_roles;
 };
 
 #endif // PACKAGEMODEL_H

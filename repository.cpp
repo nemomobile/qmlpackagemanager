@@ -62,19 +62,19 @@ void Repository::setEnabled(bool enable)
 
     emit changed();
 
-    connect(m_enableTransaction, SIGNAL(finished(PackageKit::Enum::Exit,uint)),
+    connect(m_enableTransaction, SIGNAL(finished(PackageKit::Transaction::Exit status, uint runtime)),
             this, SLOT(onFinished(PackageKit::Enum::Exit,uint)));
 
     m_enableTransaction->repoEnable(id(), enable);
 }
 
-void Repository::onFinished(PackageKit::Enum::Exit exitCode, uint duration)
+void Repository::onFinished(PackageKit::Transaction::Exit status, uint runtime)
 {
 //    qDebug() << Q_FUNC_INFO << exitCode << duration;
 
     m_enableTransaction = 0;
 
-    if (exitCode == PackageKit::Enum::ExitSuccess) {
+    if (status == PackageKit::Enum::ExitSuccess) {
         m_isEnabled = !m_isEnabled;
     }
 

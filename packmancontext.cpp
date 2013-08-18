@@ -241,7 +241,7 @@ void PackManContext::setPackagesToBeInstalled(PackageList *list)
 
 QDeclarativeListProperty<Package> PackManContext::packagesToBeInstalled()
 {
-    return QDeclarativeListProperty<Package>(this, *m_packagesToBeInstalled->list());
+    return QDeclarativeListProperty<Package>(this, *m_packagesToBeInstallem_list());
 }
 
 void PackManContext::setPackagesToBeUpdated(PackageList *list)
@@ -253,7 +253,7 @@ void PackManContext::setPackagesToBeUpdated(PackageList *list)
 
 QDeclarativeListProperty<Package> PackManContext::packagesToBeUpdated()
 {
-    return QDeclarativeListProperty<Package>(this, *m_packagesToBeUpdated->list());
+    return QDeclarativeListProperty<Package>(this, *m_packagesToBeUpdatem_list());
 }
 
 void PackManContext::setPackagesToBeRemoved(PackageList *list)
@@ -265,7 +265,7 @@ void PackManContext::setPackagesToBeRemoved(PackageList *list)
 
 QDeclarativeListProperty<Package> PackManContext::packagesToBeRemoved()
 {
-    return QDeclarativeListProperty<Package>(this, *m_packagesToBeRemoved->list());
+    return QDeclarativeListProperty<Package>(this, *m_packagesToBeRemovem_list());
 }
 
 void PackManContext::setPackageGroups(PackageGroupList *list)
