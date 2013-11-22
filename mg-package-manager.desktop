@@ -4,6 +4,6 @@ Version=1.0
 Type=Application
 Name=Packages
 Exec=invoker -s --type=d /usr/bin/mg-package-manager
-Icon=mg-package-manager
+Icon=icon-app-packages
 
 
