@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -21,10 +22,9 @@
  *
  */
 
-import QtQuick 1.0
+import QtQuick 2.0
+import com.nokia.meego 2.0
 import "utils.js" as Utils
-import com.nokia.meego 1.0
-import "UIConstants.js" as UI
 
 AppPageWithActionMenu {
     id: view
@@ -36,7 +36,7 @@ AppPageWithActionMenu {
         packageManager.refreshRepos();
     }
 
-    property Style platformStyle: LabelStyle{}
+ //   property Style platformStyle: LabelStyle{}
 
     Rectangle {
         id: emptyListNotification
@@ -65,8 +65,8 @@ AppPageWithActionMenu {
         }
         Text {
             width: parent.width
-            font.pixelSize: UI.FONT_SMALL
-            color: platformStyle.textColor
+         //   font.pixelSize: UI.FONT_SMALL
+           // color: platformStyle.textColor
             wrapMode: "WordWrap"
             text: view.listTransaction? view.listTransaction.errorText: ""
             horizontalAlignment: Text.AlignHCenter
@@ -74,7 +74,7 @@ AppPageWithActionMenu {
     }
 
     BusyIndicator {
-        platformStyle: BusyIndicatorStyle { size: "large" }
+  //      size: "large"
         running: visible
         anchors.centerIn: repolist
         visible: listTransaction != undefined && listTransaction.state == "executing"

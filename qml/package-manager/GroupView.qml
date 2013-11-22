@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -21,9 +22,9 @@
  *
  */
 
-import QtQuick 1.0
+import QtQuick 2.0
+import com.nokia.meego 2.0
 import "utils.js" as Utils
-import com.nokia.meego 1.0
 
 AppPageWithActionMenu {
     id: view
@@ -32,7 +33,7 @@ AppPageWithActionMenu {
 
     pageTitle: "Available Package Groups"
 
-    property int buttonWidth: 200
+    property int buttonWidth: 150 //view.width / 3 - 30
 
     onGroupSelected: {
         selectedGroupName = groupName;
@@ -49,7 +50,7 @@ AppPageWithActionMenu {
         Grid {
             id: buttonGrid
             anchors.horizontalCenter: parent.horizontalCenter
-            columns: Math.min(view.width / buttonWidth, 3)
+            columns: 3 //Math.min(view.width / buttonWidth, 3)
             spacing:  10
 
             Repeater {
@@ -57,8 +58,11 @@ AppPageWithActionMenu {
 
                 Button {
                     height: 50
-                    width: buttonWidth
+                    width: view.width/3 - 10
                     text: Utils.groupName(modelData.group)
+                    platformStyle: ButtonStyle {
+                        fontPixelSize: 16
+                    }
                     onClicked: {
                         groupSelected(text);
                         packageManager.refreshAvailable(modelData.group);

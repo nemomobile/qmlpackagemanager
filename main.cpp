@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -21,51 +22,52 @@
  *
  */
 
-#include <QtGui/QApplication>
-#include "qmlapplicationviewer.h"
+#include <QGuiApplication>
 #include "packagemanager.h"
 #include "iconprovider.h"
 
 #include <QObject>
 #include <QString>
 #include <QMainWindow>
-#include <QDeclarativeView>
+#include <QQuickView>
 #include <QGraphicsObject>
 
 #include <QDebug>
-#include <QDeclarativeContext>
-#include <QDeclarativeEngine>
-#include <QtDeclarative>
+#include <QtQml>
+#include <QQmlContext>
+#include <QQmlEngine>
+#include <QGuiApplication>
 
 #include "package.h"
 #include "packagegroup.h"
 #include "packagemarkings.h"
 #include "repository.h"
+#include "packagemodel.h"
+#include "filterpackagemodel.h"
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
 
-    QmlApplicationViewer viewer;
+    QQuickView viewer;
 
     PackageManager *pm = new PackageManager(&viewer);
 
-    QDeclarativeContext *context = viewer.rootContext();
+    QQmlContext *context = viewer.rootContext();
     context->setContextProperty("initialstate", "mainview");
     context->setContextProperty("mainWindow", &viewer);
     viewer.engine()->addImageProvider(QLatin1String("icons"), new IconProvider);
-    viewer.engine()->addImportPath("/usr/lib/qt4/imports");
+    viewer.engine()->addImportPath("/usr/lib/qt5/imports");
 
     qmlRegisterType<Package>("Package", 1,0, "Package");
     qmlRegisterType<PackageGroup>("Package", 1,0, "PackageGroup");
     qmlRegisterType<PackageMarkings>("Package", 1, 0, "PackageMarkings");
     qmlRegisterType<Repository>("Repository", 1,0, "Repository");
+    qmlRegisterType<FilterPackageModel>("FilterPackageModel", 1,0, "FilterPackageModel");
 
-    viewer.setMainQmlFile(QLatin1String("qml/package-manager/main.qml"));
+    viewer.setSource(QUrl("qrc:/qml/main.qml"));
 
-    viewer.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
-
-    viewer.showExpanded();
+    viewer.showFullScreen();
 
     return app.exec();
 }

@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -28,12 +29,15 @@
 #include <QDebug>
 
 IconProvider::IconProvider() :
-    QDeclarativeImageProvider(QDeclarativeImageProvider::Pixmap)
+    QQuickImageProvider(QQuickImageProvider::Pixmap)
 {
+    qDebug() << Q_FUNC_INFO;	
+	
 }
 
 QPixmap IconProvider::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
 {
+    qDebug() << Q_FUNC_INFO;	
 //    qDebug() << Q_FUNC_INFO << id << requestedSize;
 
     if (size)

@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -25,7 +26,9 @@
 #define __PACKAGE_H
 
 #include <QObject>
-#include <QPackageKit>
+#include "packageinfo.h"
+#include "detailsinfo.h"
+#include "updatedetails.h"
 
 class Package : public QObject
 {
@@ -41,34 +44,37 @@ public:
     enum Marking { NoOperation = 0, Install = 1, Update = 2, Uninstall = 4 };
         Q_DECLARE_FLAGS(Markings, Marking)
 
-    explicit Package(QSharedPointer<PackageKit::Package> package = QSharedPointer<PackageKit::Package>(), bool isUpdatePackage = false, QObject *parent = 0);
+    explicit Package(QObject *parent = 0);
+    explicit Package(QSharedPointer<PackageInfo> packagePtr, bool isUpdatePackage = false, QObject *parent = 0);
 
     QString displayName() const;
     QString filterName() const;
 
+    QString id() const;
     QString name() const;
     QString version() const;
+    QString summary() const;
 
-    QSharedPointer<PackageKit::Package> package() const;
-    PackageKit::Package *basicInfo() const;
-    PackageKit::Package *updateBasicInfo() const;
-    PackageKit::Package::Details *details() const;
-    PackageKit::Package::Details *updateDetails() const;
-    PackageKit::Client::UpdateInfo *updateInfo() const;
+    QSharedPointer<PackageInfo> package() const;
+    PackageInfo *basicInfo() const;
+    PackageInfo *updateBasicInfo() const;
+    DetailsInfo *details() const;
+    DetailsInfo *updateDetails() const;
+    UpdateDetails *updateInfo() const;
 
     bool isUpdateAvailable();
 
     void mark(bool set);
     bool isMarked();
 
-    void setPackage(QSharedPointer<PackageKit::Package>);
+    void setPackage(QSharedPointer<PackageInfo>);
 
     DataAvailability detailsAvailability();
     DataAvailability updateDetailsAvailability();
     DataAvailability updateInfoAvailability();
 
     bool operator==(Package other) const;
-
+    bool equals(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary);
 signals:
     void changed();
 
@@ -78,20 +84,20 @@ public slots:
     void fetchUpdateInfo();
 
 private slots:
-    void setPackageDetails(QSharedPointer<PackageKit::Package> packagePtr);
-    void setUpdateDetails(QSharedPointer<PackageKit::Package> packagePtr);
-    void setUpdateInfo(PackageKit::Client::UpdateInfo info);
-    void onFinished(PackageKit::Enum::Exit, uint);
+    void setPackageDetails(QSharedPointer<DetailsInfo> packagePtr);
+    void setUpdateDetails(QSharedPointer<DetailsInfo> packagePtr);
+    void setUpdateInfo(const QString &packageID, const QStringList &updates, const QStringList &obsoletes, const QStringList &vendorUrls, const QStringList &bugzillaUrls, const QStringList &cveUrls, PackageKit::Transaction::Restart restart, const QString &updateText, const QString &changelog, PackageKit::Transaction::UpdateState state, const QDateTime &issued, const QDateTime &updated);
+    void onFinished(PackageKit::Transaction::Exit status, uint runtime);
 
 private:
     QString m_name;
     bool m_mark;
 
-    QSharedPointer<PackageKit::Package> m_package;
-    QSharedPointer<PackageKit::Package> m_detailsPackage;
-    QSharedPointer<PackageKit::Package> m_updatePackage;
-    QSharedPointer<PackageKit::Package> m_updateDetailsPackage;
-    PackageKit::Client::UpdateInfo *m_updateInfo;
+    QSharedPointer<PackageInfo> m_package;
+    QSharedPointer<DetailsInfo> m_detailsPackage;
+    QSharedPointer<PackageInfo> m_updatePackage;
+    QSharedPointer<DetailsInfo> m_updateDetailsPackage;
+    UpdateDetails *m_updateInfo;
 
     PackageKit::Transaction *m_basicDetailsTransaction;
     PackageKit::Transaction *m_updateDetailsTransaction;

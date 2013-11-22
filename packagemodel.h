@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -26,10 +27,13 @@
 
 #include <QAbstractListModel>
 #include <QList>
-#include <QPackageKit>
+
 
 #include "package.h"
 #include "packagemarkings.h"
+#include "packageinfo.h"
+#include <QTimer>
+
 
 class PackageModel : public QAbstractListModel
 {
@@ -38,6 +42,7 @@ class PackageModel : public QAbstractListModel
     Q_PROPERTY(int count READ rowCount NOTIFY countChanged)
     Q_PROPERTY(int markedCount READ markedCount NOTIFY markedCountChanged)
 
+    void setRoleNames(QHash<int, QByteArray> roles);
 public:
 
     enum PackageRoles {
@@ -107,13 +112,13 @@ public:
 
     QVariant data(const QModelIndex &index, int role) const;
 
-    void addPackage(QSharedPointer<PackageKit::Package> packagePtr, bool isUpdatePackage = false);
+    void addPackage(QSharedPointer<PackageInfo> packagePtr, bool isUpdatePackage = false);
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
     int markedCount();
 
     Package *findPackage(const QString &name);
-    Package *findPackage(QSharedPointer<PackageKit::Package> packagePtr);
+    Package *findPackage(QSharedPointer<PackageInfo> packagePtr);
 
     void clear();
 
@@ -122,6 +127,11 @@ public:
     PackageMarkings *packageMarkings() { return &m_packageMarkings; }
 
     QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const;
+
+    Q_INVOKABLE QString getDisplayName(int row) const;
+    Q_INVOKABLE QString name(int row) const;
+    Q_INVOKABLE QString version(int row) const;
+    Q_INVOKABLE Package *packageByRow(int row) const;
 
 signals:
     void countChanged();
@@ -140,6 +150,7 @@ private:
     QList<Package*> m_packageBuffer;
     PackageMarkings m_packageMarkings;
     QTimer m_addTimer;
+    QHash<int, QByteArray> m_roles;
 };
 
 #endif // PACKAGEMODEL_H

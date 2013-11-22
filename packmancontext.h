@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -30,13 +31,15 @@
 #include "packagegroup.h"
 #include "repository.h"
 
-#include <QPackageKit>
+//#include <QPackageKit>
 #include <QObject>
-#include <QDeclarativeListProperty>
+#include <QQmlListProperty>
+#include "packagemodel.h"
 
 class QAbstractItemModel;
 class Package;
 class PackageList;
+class FilterPackageModel;
 
 class PackManContext : public QObject
 {
@@ -44,9 +47,9 @@ class PackManContext : public QObject
 
     Q_PROPERTY(QObject *packageManager READ packageManager NOTIFY packageManagerChanged)
 
-    Q_PROPERTY(QObject *installedPackagesModel READ installedPackagesModel NOTIFY installedPackagesModelChanged)
-    Q_PROPERTY(QObject *updateAvailablePackagesModel READ updateAvailablePackagesModel NOTIFY updateAvailablePackagesModelChanged)
-    Q_PROPERTY(QObject *availablePackagesModel READ availablePackagesModel NOTIFY availablePackagesModelChanged)
+    Q_PROPERTY(FilterPackageModel *installedPackagesModel READ installedPackagesModel NOTIFY installedPackagesModelChanged)
+    Q_PROPERTY(FilterPackageModel *updateAvailablePackagesModel READ updateAvailablePackagesModel NOTIFY updateAvailablePackagesModelChanged)
+    Q_PROPERTY(FilterPackageModel *availablePackagesModel READ availablePackagesModel NOTIFY availablePackagesModelChanged)
 
     Q_PROPERTY(uint selectedGroup READ selectedGroup NOTIFY selectedGroupChanged)
     Q_PROPERTY(QObject *packageMarkings READ packageMarkings NOTIFY packageMarkingsChanged)
@@ -61,13 +64,13 @@ class PackManContext : public QObject
     Q_PROPERTY(QObject *uninstallPackagesTransaction READ uninstallPackagesTransaction NOTIFY uninstallPackagesTransactionChanged)
     Q_PROPERTY(QObject *installPackagesTransaction READ installPackagesTransaction NOTIFY installPackagesTransactionChanged)
 
-    Q_PROPERTY(QDeclarativeListProperty<Package> packagesToBeInstalled READ packagesToBeInstalled NOTIFY packagesToBeInstalledChanged)
-    Q_PROPERTY(QDeclarativeListProperty<Package> packagesToBeUpdated READ packagesToBeUpdated NOTIFY packagesToBeUpdatedChanged)
-    Q_PROPERTY(QDeclarativeListProperty<Package> packagesToBeRemoved READ packagesToBeRemoved NOTIFY packagesToBeRemovedChanged)
+    Q_PROPERTY(QQmlListProperty<Package> packagesToBeInstalled READ packagesToBeInstalled NOTIFY packagesToBeInstalledChanged)
+    Q_PROPERTY(QQmlListProperty<Package> packagesToBeUpdated READ packagesToBeUpdated NOTIFY packagesToBeUpdatedChanged)
+    Q_PROPERTY(QQmlListProperty<Package> packagesToBeRemoved READ packagesToBeRemoved NOTIFY packagesToBeRemovedChanged)
 
-    Q_PROPERTY(QDeclarativeListProperty<PackageGroup> packageGroups READ packageGroups NOTIFY packageGroupsChanged)
+    Q_PROPERTY(QQmlListProperty<PackageGroup> packageGroups READ packageGroups NOTIFY packageGroupsChanged)
 
-    Q_PROPERTY(QDeclarativeListProperty<Repository> repositories READ repositories NOTIFY repositoriesChanged)
+    Q_PROPERTY(QQmlListProperty<Repository> repositories READ repositories NOTIFY repositoriesChanged)
 
 public:
     explicit PackManContext(QObject *parent = 0);
@@ -75,14 +78,14 @@ public:
     void setPackageManager(QObject *manager);
     QObject *packageManager();
 
-    void setInstalledPackagesModel(QAbstractItemModel *model);
-    QAbstractItemModel *installedPackagesModel();
+    void setInstalledPackagesModel(FilterPackageModel *model);
+    FilterPackageModel *installedPackagesModel();
 
-    void setUpdateAvailablePackagesModel(QAbstractItemModel *model);
-    QAbstractItemModel *updateAvailablePackagesModel();
+    void setUpdateAvailablePackagesModel(FilterPackageModel *model);
+    FilterPackageModel *updateAvailablePackagesModel();
 
-    void setAvailablePackagesModel(QAbstractItemModel *model);
-    QAbstractItemModel *availablePackagesModel();
+    void setAvailablePackagesModel(FilterPackageModel *model);
+    FilterPackageModel *availablePackagesModel();
 
     void setSelectedGroup(uint group);
     uint selectedGroup();
@@ -115,19 +118,19 @@ public:
     QObject *installPackagesTransaction();
 
     void setPackagesToBeInstalled(PackageList *list);
-    QDeclarativeListProperty<Package> packagesToBeInstalled();
+    QQmlListProperty<Package> packagesToBeInstalled();
 
     void setPackagesToBeUpdated(PackageList *list);
-    QDeclarativeListProperty<Package> packagesToBeUpdated();
+    QQmlListProperty<Package> packagesToBeUpdated();
 
     void setPackagesToBeRemoved(PackageList *list);
-    QDeclarativeListProperty<Package> packagesToBeRemoved();
+    QQmlListProperty<Package> packagesToBeRemoved();
 
     void setPackageGroups(PackageGroupList *list);
-    QDeclarativeListProperty<PackageGroup> packageGroups();
+    QQmlListProperty<PackageGroup> packageGroups();
 
     void setRepositories(RepositoryList *list);
-    QDeclarativeListProperty<Repository> repositories();
+    QQmlListProperty<Repository> repositories();
 
 signals:
     void packageManagerChanged();
@@ -162,9 +165,9 @@ public slots:
 private:
     QObject *m_packageManager;
 
-    QAbstractItemModel *m_installedPackagesModel;
-    QAbstractItemModel *m_updateAvailablePackagesModel;
-    QAbstractItemModel *m_availablePackagesModel;
+    FilterPackageModel *m_installedPackagesModel;
+    FilterPackageModel *m_updateAvailablePackagesModel;
+    FilterPackageModel *m_availablePackagesModel;
 
     uint m_selectedGroup;
     QObject *m_packageMarkings;

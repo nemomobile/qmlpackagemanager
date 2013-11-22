@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -24,10 +25,14 @@
 #include "package.h"
 
 #include "packagemanager.h"
+#include <QDebug>
 
-#include <QPackageKit>
+Package::Package(QObject *parent)
+{
 
-Package::Package(QSharedPointer<PackageKit::Package> packagePtr, bool isUpdatePackage, QObject *parent) :
+}
+
+Package::Package(QSharedPointer<PackageInfo> packagePtr, bool isUpdatePackage, QObject *parent) :
     QObject(parent),
     m_mark(false),
     m_updateInfo(0),
@@ -37,16 +42,28 @@ Package::Package(QSharedPointer<PackageKit::Package> packagePtr, bool isUpdatePa
 {
     if (isUpdatePackage) {
         m_updatePackage = packagePtr;
-        m_name = updateBasicInfo()->name();
+        m_name = PackageKit::Transaction::packageName(m_updatePackage->id());
     } else {
         m_package = packagePtr;
-        m_name = basicInfo()->name();
+        m_name = PackageKit::Transaction::packageName(basicInfo()->id());
     }
 }
 
 bool Package::operator==(Package other) const
 {
     return m_name == other.m_name;
+}
+
+bool Package::equals(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary)
+{
+    QSharedPointer<PackageInfo> package = this->package();
+	
+    if (packageID == package.data()->id()) {
+        return true;
+    }
+    else {
+        return false;	
+    }
 }
 
 bool Package::isMarked()
@@ -69,17 +86,30 @@ QString Package::name() const
 
 QString Package::version() const
 {
-    return basicInfo()->version();
+    return PackageKit::Transaction::packageVersion(basicInfo()->id());
 }
+
+QString Package::summary() const
+{
+    QSharedPointer<PackageInfo> package = this->package();
+    return package.data()->summary();
+}
+
 
 
 QString Package::displayName() const
 {
-    QSharedPointer<PackageKit::Package> package = this->package();
+    QSharedPointer<PackageInfo> package = this->package();
     if (package.isNull())
         return m_name;
     else
-        return (*package).summary();
+        return package.data()->summary();
+}
+
+QString Package::id() const
+{
+    QSharedPointer<PackageInfo> package = this->package();
+	 return package.data()->id();
 }
 
 QString Package::filterName() const
@@ -87,10 +117,10 @@ QString Package::filterName() const
     if (m_package.isNull() && m_updatePackage.isNull())
         return m_name;
     else
-        return basicInfo()->name() + ":::" + basicInfo()->summary();
+        return name() + ":::" + basicInfo()->summary();
 }
 
-QSharedPointer<PackageKit::Package> Package::package() const
+QSharedPointer<PackageInfo> Package::package() const
 {
     if (m_package.isNull())
         return m_updatePackage;
@@ -98,7 +128,7 @@ QSharedPointer<PackageKit::Package> Package::package() const
         return m_package;
 }
 
-PackageKit::Package *Package::basicInfo() const
+PackageInfo *Package::basicInfo() const
 {
     if (m_package.isNull()) {
         if (m_updatePackage.isNull())
@@ -110,16 +140,16 @@ PackageKit::Package *Package::basicInfo() const
     }
 }
 
-PackageKit::Package::Details *Package::details() const
+DetailsInfo *Package::details() const
 {
     if (m_detailsPackage.isNull()) {
         return updateDetails();
     } else {
-        return (*m_detailsPackage.data()).details();
+        return m_detailsPackage.data();
     }
 }
 
-PackageKit::Package *Package::updateBasicInfo() const
+PackageInfo *Package::updateBasicInfo() const
 {
     if (m_updatePackage.isNull())
         return 0;
@@ -127,17 +157,16 @@ PackageKit::Package *Package::updateBasicInfo() const
         return m_updatePackage.data();
 }
 
-PackageKit::Package::Details *Package::updateDetails() const
+DetailsInfo *Package::updateDetails() const
 {
     if (m_updateDetailsPackage.isNull()) {
         return 0;
     } else {
-        PackageKit::Package *p = m_updateDetailsPackage.data();
-        return p->details();
+        return m_updateDetailsPackage.data();
     }
 }
 
-PackageKit::Client::UpdateInfo *Package::updateInfo() const
+UpdateDetails *Package::updateInfo() const
 {
     return m_updateInfo;
 }
@@ -147,89 +176,128 @@ bool Package::isUpdateAvailable()
     return !m_updatePackage.isNull();
 }
 
-void Package::setPackage(QSharedPointer<PackageKit::Package> packagePtr)
+void Package::setPackage(QSharedPointer<PackageInfo> packagePtr)
 {
+ //   qDebug() << Q_FUNC_INFO;	
 //    qDebug() << Q_FUNC_INFO << m_name;
     m_package = packagePtr;
     emit changed();
 }
 
-void Package::setPackageDetails(QSharedPointer<PackageKit::Package> packagePtr)
+void Package::setPackageDetails(QSharedPointer<DetailsInfo> packagePtr)
 {
-//    qDebug() << Q_FUNC_INFO << m_name;
     m_detailsPackage = packagePtr;
     emit changed();
 }
 
-void Package::setUpdateDetails(QSharedPointer<PackageKit::Package> packagePtr)
+void Package::setUpdateDetails(QSharedPointer<DetailsInfo> packagePtr)
 {
+  //  qDebug() << Q_FUNC_INFO;	
 //    qDebug() << Q_FUNC_INFO << m_name;
     m_updateDetailsPackage = packagePtr;
     emit changed();
 }
 
-void Package::setUpdateInfo(PackageKit::Client::UpdateInfo info)
+void Package::setUpdateInfo(const QString &packageID,
+                            const QStringList &updates,
+                            const QStringList &obsoletes,
+                            const QStringList &vendorUrls,
+                            const QStringList &bugzillaUrls,
+                            const QStringList &cveUrls,
+                            PackageKit::Transaction::Restart restart,
+                            const QString &updateText,
+                            const QString &changelog,
+                            PackageKit::Transaction::UpdateState state,
+                            const QDateTime &issued,
+                            const QDateTime &updated)
 {
+  //  qDebug() << Q_FUNC_INFO;	
 //    qDebug() << Q_FUNC_INFO << m_name;
     if (m_updateInfo)
         delete m_updateInfo;
 
-    m_updateInfo = new PackageKit::Client::UpdateInfo();
-    memcpy(m_updateInfo, &info, sizeof(info));
+    m_updateInfo = new UpdateDetails(packageID, updates, obsoletes, vendorUrls, bugzillaUrls,
+                                     cveUrls, restart, updateText, changelog, state, issued, updated);
 
     emit changed();
 }
 
 void Package::fetchPackageDetails()
 {
+   // qDebug() << Q_FUNC_INFO;	
 //    qDebug() << Q_FUNC_INFO << m_name;
 
     if (m_basicDetailsTransaction || m_package.isNull() || !m_detailsPackage.isNull())
         return;
 
-    m_basicDetailsTransaction = new PackageKit::Transaction(0, this);
+    m_basicDetailsTransaction = new PackageKit::Transaction(this);
 
     connect(m_basicDetailsTransaction, SIGNAL(details(QSharedPointer<PackageKit::Package>)),
             this, SLOT(setPackageDetails(QSharedPointer<PackageKit::Package>)));
     connect(m_basicDetailsTransaction, SIGNAL(finished(PackageKit::Enum::Exit,uint)),
             this, SLOT(onFinished(PackageKit::Enum::Exit,uint)));
-    m_basicDetailsTransaction->getDetails(m_package);
+    m_basicDetailsTransaction->getDetails(m_package.data()->id());
 }
 
 void Package::fetchUpdateDetails()
 {
+  //  qDebug() << Q_FUNC_INFO;	
 //    qDebug() << Q_FUNC_INFO << m_name;
 
     if (m_updateDetailsTransaction || m_updatePackage.isNull() || !m_updateDetailsPackage.isNull())
         return;
 
-    m_updateDetailsTransaction = new PackageKit::Transaction(0, this);
+    m_updateDetailsTransaction = new PackageKit::Transaction(this);
 
     connect(m_updateDetailsTransaction, SIGNAL(details(QSharedPointer<PackageKit::Package>)),
             this, SLOT(setUpdateDetails(QSharedPointer<PackageKit::Package>)));
     connect(m_updateDetailsTransaction, SIGNAL(finished(PackageKit::Enum::Exit,uint)),
             this, SLOT(onFinished(PackageKit::Enum::Exit,uint)));
-    m_updateDetailsTransaction->getDetails(m_updatePackage);
+    m_updateDetailsTransaction->getDetails(m_updatePackage.data()->id());
 }
 
 void Package::fetchUpdateInfo()
 {
+  //  qDebug() << Q_FUNC_INFO;	
 //    qDebug() << Q_FUNC_INFO << m_name;
 
     if (m_updateInfoTransaction || m_updatePackage.isNull() || m_updateInfo)
         return;
 
-    m_updateInfoTransaction = new PackageKit::Transaction(0, this);
+    m_updateInfoTransaction = new PackageKit::Transaction(this);
 
-    connect(m_updateInfoTransaction, SIGNAL(updateDetail(PackageKit::Client::UpdateInfo)),
-            this, SLOT(setUpdateInfo(PackageKit::Client::UpdateInfo)));
-    connect(m_updateInfoTransaction, SIGNAL(finished(PackageKit::Enum::Exit,uint)),
-            this, SLOT(onFinished(PackageKit::Enum::Exit,uint)));
-    m_updateInfoTransaction->getUpdateDetail(m_updatePackage);
+    connect(m_updateInfoTransaction, SIGNAL(updateDetail(const QString &packageID,
+                                                         const QStringList &updates,
+                                                         const QStringList &obsoletes,
+                                                         const QStringList &vendorUrls,
+                                                         const QStringList &bugzillaUrls,
+                                                         const QStringList &cveUrls,
+                                                         PackageKit::Transaction::Restart restart,
+                                                         const QString &updateText,
+                                                         const QString &changelog,
+                                                         PackageKit::Transaction::UpdateState state,
+                                                         const QDateTime &issued,
+                                                         const QDateTime &updated)),
+            this, SLOT(setUpdateInfo(const QString &packageID,
+                                     const QStringList &updates,
+                                     const QStringList &obsoletes,
+                                     const QStringList &vendorUrls,
+                                     const QStringList &bugzillaUrls,
+                                     const QStringList &cveUrls,
+                                     PackageKit::Transaction::Restart restart,
+                                     const QString &updateText,
+                                     const QString &changelog,
+                                     PackageKit::Transaction::UpdateState state,
+                                     const QDateTime &issued,
+                                     const QDateTime &updated)));
+    connect(m_updateInfoTransaction, SIGNAL(finished(PackageKit::Transaction::Exit status, uint runtime)),
+            this, SLOT(onFinished(PackageKit::Transaction::Exit status, uint runtime)));
+    m_updateInfoTransaction->getUpdateDetail(m_updatePackage.data()->id());
 }
 
 Package::DataAvailability Package::detailsAvailability()
 {
+   // qDebug() << Q_FUNC_INFO;	
     return m_package.isNull()? updateDetailsAvailability():
                                m_detailsPackage? Available:
                                                  m_basicDetailsTransaction? Fetching:
@@ -238,6 +306,7 @@ Package::DataAvailability Package::detailsAvailability()
 
 Package::DataAvailability Package::updateDetailsAvailability()
 {
+  //  qDebug() << Q_FUNC_INFO;	
     return m_updatePackage.isNull()? NotApplicable:
                                      m_updateDetailsPackage? Available:
                                                              m_updateDetailsTransaction? Fetching:
@@ -246,14 +315,16 @@ Package::DataAvailability Package::updateDetailsAvailability()
 
 Package::DataAvailability Package::updateInfoAvailability()
 {
+  //  qDebug() << Q_FUNC_INFO;	
     return m_updatePackage.isNull()? NotApplicable:
                                      m_updateInfo? Available:
                                                    m_updateInfoTransaction? Fetching:
                                                                             NotAvailable;
 }
 
-void Package::onFinished(PackageKit::Enum::Exit status, uint runtime)
+void Package::onFinished(PackageKit::Transaction::Exit status, uint runtime)
 {
+   // qDebug() << Q_FUNC_INFO;	
 //    qDebug() << Q_FUNC_INFO << status << runtime << m_name;
     if (sender() == m_basicDetailsTransaction)
         m_basicDetailsTransaction = 0;

@@ -21,14 +21,20 @@ symbian:TARGET.CAPABILITY += NetworkServices
 # DEFINES += QMLJSDEBUGGER
 
 # If your application uses the Qt Mobility libraries, uncomment
-# the following lines and add the respective components to the 
-# MOBILITY variable. 
+# the following lines and add the respective components to the
+# MOBILITY variable.
 # CONFIG += mobility
 # MOBILITY +=
 
 CONFIG += link_pkgconfig
-PKGCONFIG += packagekit-qt
-QT += network
+#PKGCONFIG += PackageKit-Qt5
+QT += dbus network qml quick widgets
+
+LIBS += -lpackagekit-qt5
+
+RESOURCES += qml/package-manager/res.qrc qml/images/images.qrc
+
+INCLUDEPATH += /usr/include/PackageKit/packagekit-qt5/
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
@@ -43,11 +49,14 @@ SOURCES += main.cpp \
     packagelist.cpp \
     packagegroup.cpp \
     repository.cpp \
-    networktest.cpp
+    networktest.cpp \
+    packageinfo.cpp \
+    detailsinfo.cpp \
+    updatedetails.cpp
 
 # Please do not modify the following two lines. Required for deployment.
-include(qmlapplicationviewer/qmlapplicationviewer.pri)
-qtcAddDeployment()
+#include(qmlapplicationviewer/qmlapplicationviewer.pri)
+#qtcAddDeployment()
 
 HEADERS += \
     packagemodel.h \
@@ -61,5 +70,17 @@ HEADERS += \
     packagelist.h \
     packagegroup.h \
     repository.h \
-    networktest.h
+    networktest.h \
+    packageinfo.h \
+    detailsinfo.h \
+    updatedetails.h
+
+
+
+target.path = $$INSTALL_ROOT/usr/bin/
+
+desktop.files = mg-package-manager.desktop
+desktop.path = $$INSTALL_ROOT/usr/share/applications
+
+INSTALLS += target desktop
 

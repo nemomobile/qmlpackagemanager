@@ -1,6 +1,6 @@
 Name:    qmlpackagemanager
 Summary: Package Manager UI for Nemo 
-Version: 0.2.2
+Version: 0.3.0
 Release: 1
 Group: Applications/System
 License: LGPLv2.1
@@ -14,18 +14,19 @@ Obsoletes:
 
 Description: Package management UI for Nemo
 Configure: none
-Builder: qmake
+Builder: qmake5
 
 PkgConfigBR:
-    - QtCore >= 4.7.0
-    - QtDeclarative
-    - packagekit-qt
+    - QtCore
+    - Qt5Quick
+    - Qt5Qml
+
 
 Requires:
-    - qt-components
-    - PackageKit >= 0.6.11
-    - PackageKit-libs >= 0.6.11
-    - PackageKit-zypp >= 0.6.11
+    - qt-components-qt5
+    - packagekit >= 0.8.9-5.1
+    - PackageKit-libs >= 0.8.9-5.1
+    - PackageKit-zypp >= 0.8.9-5.1
 
 Files:
     - "%{_bindir}/mg-package-manager"

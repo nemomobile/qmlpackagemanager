@@ -1,10 +1,9 @@
 /*
  * This file is part of mg-package-manager
  *
- * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
- * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
+ * Copyright (C) 2013 Nomovok.
  *
- * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
+ * Contact: Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -22,23 +21,20 @@
  *
  */
 
-#ifndef ICONPROVIDER_H
-#define ICONPROVIDER_H
+import QtQuick 2.0
+import com.nokia.meego 2.0
 
-#include <QQuickImageProvider>
-#include <QPixmap>
+Item {
+    id: packageItem
+    property QtObject pkgs: null
 
-class IconProvider : public QQuickImageProvider
-{
-public:
-    explicit IconProvider();
+   // Item {
+   //     anchors.fill: parent
+        Text {
+           // width: parent.width
+            id: versionText
+            text: "" // pkgs.name(index) + " - " + pkgs.version(index)
+        }
+ //   }
 
-    QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize);
-
-signals:
-
-public slots:
-
-};
-
-#endif // ICONPROVIDER_H
+}

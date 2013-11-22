@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -21,28 +22,28 @@
  *
  */
 
-import QtQuick 1.0
-import com.nokia.meego 1.0
-import "UIConstants.js" as UI
+import QtQuick 2.0
+import com.nokia.meego 2.0
 
 Item {
     id: packageItem
 
-    property variant pkg
+    property QtObject pkg: null
     property bool isCurrent: ListView.isCurrentItem
     property variant marker: Component { Rectangle { height:15; width: 15; color: "blue"} }
 
-    signal showDetails
+    signal showDetails(int iLineIndex)
     signal showContextMenu(int x, int y)
 
     anchors.left: parent.left
     anchors.right: parent.right
 
     height: 70
-
+/*
     Component.onCompleted: {
         pkg = packageObject;
     }
+    */
 
     function mark(set) {
         ListView.view.model.mark(index, set);
@@ -54,11 +55,9 @@ Item {
         id: mouseArea
         anchors.fill:  parent
         onClicked: {
-            view.currentIndex = index
-            showDetails();
+            showDetails(index);
         }
         onPressAndHold: {
-            view.currentIndex = index
 //            console.log(mouse.x + " " + mouse.y);
             showContextMenu(mouse.x, mouse.y);
         }
@@ -79,7 +78,7 @@ Item {
                 spacing: 10
                 Image {
                     id: iconRect
-                    source: packageIcon? "image://icons/" + packageIcon: ""
+         //           source: packageIcon? "image://icons/" + packageIcon: ""
                     width: 32
                     height: 32
                     anchors.verticalCenter: parent.verticalCenter
@@ -90,14 +89,17 @@ Item {
                     Text {
                         width: parent.width
                         id: nameText
-                        text: pkg.displayName
+                        text: {
+                            return pkg.displayName(index)
+                        }
+
                         elide: Text.ElideRight
                         font.pixelSize: UI.FONT_LARGE
                     }
                    Text {
                         width: parent.width
                         id: versionText
-                        text: pkg.name + " " + pkg.version
+                        text: pkg.name(index) + " - " + pkg.version(index)
                         elide: Text.ElideRight
                         color: "#777"
                         font.pixelSize: UI.FONT_LSMALL

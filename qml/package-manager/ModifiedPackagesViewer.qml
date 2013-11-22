@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -21,8 +22,8 @@
  *
  */
 
-import QtQuick 1.0
-import com.nokia.meego 1.0
+import QtQuick 2.0
+import com.nokia.meego 2.0
 
 Flickable {
     id: flick
@@ -38,7 +39,7 @@ Flickable {
             title: "Packages to be installed"
             model: packagesToBeInstalled
         }
-
+/*
         ModifiedPackagesList {
             id: toUpdates
             title: "Packages to be updated"
@@ -49,6 +50,6 @@ Flickable {
             id:toRemove
             title: "Packages to be removed"
             model: packagesToBeRemoved
-        }
+        }*/
     }
 }
