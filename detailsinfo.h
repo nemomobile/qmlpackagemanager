@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "transaction.h"
+#include "packageinfo.h"
 
 
 class DetailsInfo

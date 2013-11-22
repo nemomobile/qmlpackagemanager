@@ -22,6 +22,18 @@ public:
                   PackageKit::Transaction::UpdateState state,
                   const QDateTime &issued,
                   const QDateTime &updated);
+
+    QStringList vendorUrls();
+    QStringList bugzillaUrls();
+    QStringList cveUrls();
+    PackageKit::Transaction::Restart restart();
+    QString updateText();
+    QString changelog();
+    PackageKit::Transaction::UpdateState state();
+    QDateTime issued();
+    QDateTime updated();
+    QStringList verndorUrls();
+
 private:
     QString m_packageID;
     QStringList m_updates;

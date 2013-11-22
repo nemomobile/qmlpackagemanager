@@ -9,13 +9,14 @@ class PackageInfo : public QObject
 {
     Q_OBJECT
 public:
+    PackageInfo(QSharedPointer<PackageInfo> pPackagInfo, QObject *parent = 0);
     explicit PackageInfo(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary, QObject *parent = 0);
     PackageInfo() {;}
     QString id();
     QString summary();
     PackageKit::Transaction::Info info();
 signals:
-    
+
 public slots:
 
 private:

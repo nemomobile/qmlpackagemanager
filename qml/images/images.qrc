@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>clear.svg</file>
+        <file>download.png</file>
+        <file>help.png</file>
+        <file>uninstall.png</file>
+        <file>update.png</file>
+        <file>void.png</file>
+        <file>icon-m-toolbar-search-white-selected.png</file>
+    </qresource>
+</RCC>

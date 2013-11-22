@@ -1,0 +1,29 @@
+<RCC>
+    <qresource prefix="/qml">
+        <file>AppPageWithActionMenu.qml</file>
+        <file>AvailableView.qml</file>
+        <file>FilterInput.qml</file>
+        <file>GroupView.qml</file>
+        <file>HelpView.qml</file>
+        <file>ImageButton.qml</file>
+        <file>InstalledView.qml</file>
+        <file>main.qml</file>
+        <file>MainView.qml</file>
+        <file>ModifiedPackagesListDelegate.qml</file>
+        <file>ModifiedPackagesList.qml</file>
+        <file>ModifiedPackagesViewer.qml</file>
+        <file>PackageDetails.qml</file>
+        <file>PackageListDelegate.qml</file>
+        <file>PackageList.qml</file>
+        <file>PackageListView.qml</file>
+        <file>RepoListDelegate.qml</file>
+        <file>RepoListView.qml</file>
+        <file>TextData.qml</file>
+        <file>Transaction.qml</file>
+        <file>UIConstants.js</file>
+        <file>UpdateView.qml</file>
+        <file>utils.js</file>
+        <file>ViewSwitchMenuItem.qml</file>
+    </qresource>
+</RCC>
+

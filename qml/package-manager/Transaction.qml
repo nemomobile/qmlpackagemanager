@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -21,10 +22,9 @@
  *
  */
 
-import QtQuick 1.0
+import QtQuick 2.0
+import com.nokia.meego 2.0
 import "utils.js" as Utils
-import com.nokia.meego 1.0
-import "UIConstants.js" as UI
 
 Sheet {
     id: sheet
@@ -32,7 +32,6 @@ Sheet {
     acceptButtonText: "OK"
     rejectButtonText: "Cancel"
 
-    platformStyle: SheetStyle { }
     property variant transaction
     property bool showStatus: true
     property bool transactionSet : transaction != undefined

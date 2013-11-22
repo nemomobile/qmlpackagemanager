@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -20,11 +21,10 @@
  * 02110-1301 USA
  *
  */
-
+#include <QDebug>
 #include "filterpackagemodel.h"
 
 #include "packagemodel.h"
-
 
 FilterPackageModel::FilterPackageModel(QObject *parent) :
     QSortFilterProxyModel(parent)
@@ -33,6 +33,8 @@ FilterPackageModel::FilterPackageModel(QObject *parent) :
 
 void FilterPackageModel::setSourceModel(QAbstractItemModel *sModel)
 {
+	
+
     PackageModel *packageModel = qobject_cast<PackageModel*>(sourceModel());
 
     if (packageModel) {
@@ -54,8 +56,6 @@ void FilterPackageModel::setSourceModel(QAbstractItemModel *sModel)
 
 void FilterPackageModel::mark(int row, bool set)
 {
-//    qDebug() << Q_FUNC_INFO << row << set;
-
     PackageModel *sModel = qobject_cast<PackageModel*>(sourceModel());
     sModel->mark(mapToSource(index(row,0)).row(), set);
 }
@@ -68,7 +68,6 @@ void FilterPackageModel::resetMarkings()
 
 void FilterPackageModel::setFilterString(const QString &text)
 {
-//    qDebug() << Q_FUNC_INFO << text;
     setFilterFixedString(text);
     emit filteredCountChanged();
 }
@@ -76,6 +75,29 @@ void FilterPackageModel::setFilterString(const QString &text)
 int FilterPackageModel::filteredCount()
 {
     return rowCount();
+}
+
+QString FilterPackageModel::displayName(int row)
+{
+    PackageModel *sModel = qobject_cast<PackageModel*>(sourceModel());
+    return sModel->getDisplayName(row);
+}
+
+Q_INVOKABLE QString FilterPackageModel::name(int row)
+{
+    PackageModel *sModel = qobject_cast<PackageModel*>(sourceModel());
+    return sModel->name(row);
+}
+Q_INVOKABLE QString FilterPackageModel::version(int row)
+{
+    PackageModel *sModel = qobject_cast<PackageModel*>(sourceModel());
+    return sModel->version(row);
+}
+
+Package *FilterPackageModel::packageByRow(int row) const
+{
+    PackageModel *sModel = qobject_cast<PackageModel*>(sourceModel());
+    return sModel->packageByRow(row);
 }
 
 int FilterPackageModel::totalCount()
@@ -86,7 +108,7 @@ int FilterPackageModel::totalCount()
 int FilterPackageModel::markedCount()
 {
     PackageModel *sModel = qobject_cast<PackageModel*>(sourceModel());
-    sModel->markedCount();
+    return sModel->markedCount();
 }
 
 

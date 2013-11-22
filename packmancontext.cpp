@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -20,10 +21,14 @@
  * 02110-1301 USA
  *
  */
-
+#include <QDebug>
 #include "packmancontext.h"
-
+#include "packagemodel.h"
 #include "packagelist.h"
+#include "filterpackagemodel.h"
+
+//#define PACKAGECONTEXT_LOG
+
 
 PackManContext::PackManContext(QObject *parent) :
     QObject(parent),
@@ -41,52 +46,80 @@ PackManContext::PackManContext(QObject *parent) :
     m_uninstallPackagesTransaction(0),
     m_installPackagesTransaction(0)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
 }
 
 void PackManContext::setPackageManager(QObject *manager)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     m_packageManager = manager;
     emit packageManagerChanged();
 }
 
 QObject *PackManContext::packageManager()
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     return m_packageManager;
 }
 
-void PackManContext::setInstalledPackagesModel(QAbstractItemModel *model)
+void PackManContext::setInstalledPackagesModel(FilterPackageModel *model)
 {
+#ifdef PACKAGECONTEXT_LOG
+qDebug() << "void PackManContext::setInstalledPackagesModel(QAbstractItemModel *model)";
+#endif
     if (model != m_installedPackagesModel) {
         m_installedPackagesModel = model;
         emit installedPackagesModelChanged();
     }
 }
 
-QAbstractItemModel *PackManContext::installedPackagesModel()
+FilterPackageModel *PackManContext::installedPackagesModel()
 {
+#ifdef PACKAGECONTEXT_LOG
+	qDebug() << Q_FUNC_INFO;
+#endif
     return m_installedPackagesModel;
 }
 
-void PackManContext::setUpdateAvailablePackagesModel(QAbstractItemModel *model)
+void PackManContext::setUpdateAvailablePackagesModel(FilterPackageModel *model)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     if (model != m_updateAvailablePackagesModel) {
         m_updateAvailablePackagesModel = model;
         emit updateAvailablePackagesModelChanged();
     }
 }
 
-QAbstractItemModel *PackManContext::updateAvailablePackagesModel()
+FilterPackageModel *PackManContext::updateAvailablePackagesModel()
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
+	
     return m_updateAvailablePackagesModel;
 }
 
-QAbstractItemModel *PackManContext::availablePackagesModel()
+FilterPackageModel *PackManContext::availablePackagesModel()
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     return m_availablePackagesModel;
 }
 
-void PackManContext::setAvailablePackagesModel(QAbstractItemModel *model)
+void PackManContext::setAvailablePackagesModel(FilterPackageModel *model)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     if (model != m_availablePackagesModel) {
         m_availablePackagesModel = model;
         emit availablePackagesModelChanged();
@@ -95,6 +128,9 @@ void PackManContext::setAvailablePackagesModel(QAbstractItemModel *model)
 
 void PackManContext::setSelectedGroup(uint group)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     if (group != m_selectedGroup) {
         m_selectedGroup = group;
         emit selectedGroupChanged();
@@ -103,22 +139,34 @@ void PackManContext::setSelectedGroup(uint group)
 
 uint PackManContext::selectedGroup()
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     return m_selectedGroup;
 }
 
 void PackManContext::setPackageMarkings(QObject *markings)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     m_packageMarkings = markings;
     emit packageMarkingsChanged();
 }
 
 QObject *PackManContext::packageMarkings()
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;
+#endif    	
     return m_packageMarkings;
 }
 
 void PackManContext::setRefreshCacheTransaction(TransactionWrapper *transaction)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     if (m_refreshCacheTransaction)
         m_refreshCacheTransaction->deleteLater();
 
@@ -129,11 +177,17 @@ void PackManContext::setRefreshCacheTransaction(TransactionWrapper *transaction)
 
 QObject *PackManContext::refreshCacheTransaction()
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     return m_refreshCacheTransaction;
 }
 
 void PackManContext::setRefreshReposTransaction(TransactionWrapper *transaction)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     if (m_refreshReposTransaction)
         m_refreshReposTransaction->deleteLater();
 
@@ -143,11 +197,17 @@ void PackManContext::setRefreshReposTransaction(TransactionWrapper *transaction)
 
 QObject *PackManContext::refreshReposTransaction()
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     return m_refreshReposTransaction;
 }
 
 void PackManContext::setGetPackagesTransaction(TransactionWrapper *transaction)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     if (m_getPackagesTransaction)
         m_getPackagesTransaction->deleteLater();
 
@@ -158,11 +218,17 @@ void PackManContext::setGetPackagesTransaction(TransactionWrapper *transaction)
 
 QObject *PackManContext::getPackagesTransaction()
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     return m_getPackagesTransaction;
 }
 
 void PackManContext::setGetUpdatesTransaction(TransactionWrapper *transaction)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     if (m_getUpdatesTransaction)
         m_getUpdatesTransaction->deleteLater();
 
@@ -172,16 +238,25 @@ void PackManContext::setGetUpdatesTransaction(TransactionWrapper *transaction)
 
 QObject *PackManContext::getUpdatesTransaction()
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     return m_getUpdatesTransaction;
 }
 
 QObject *PackManContext::searchGroupsTransaction()
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     return m_searchGroupsTransaction;
 }
 
 void PackManContext::setSearchGroupsTransaction(TransactionWrapper *transaction)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     if (m_searchGroupsTransaction)
         m_searchGroupsTransaction->deleteLater();
 
@@ -191,6 +266,9 @@ void PackManContext::setSearchGroupsTransaction(TransactionWrapper *transaction)
 
 void PackManContext::setUpdatePackagesTransaction(TransactionWrapper *transaction)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     if (m_updatePackagesTransaction)
         m_updatePackagesTransaction->deleteLater();
 
@@ -200,11 +278,17 @@ void PackManContext::setUpdatePackagesTransaction(TransactionWrapper *transactio
 
 QObject *PackManContext::updatePackagesTransaction()
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     return m_updatePackagesTransaction;
 }
 
 void PackManContext::setUninstallPackagesTransaction(TransactionWrapper *transaction)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     if (m_uninstallPackagesTransaction)
         m_uninstallPackagesTransaction->deleteLater();
 
@@ -214,11 +298,17 @@ void PackManContext::setUninstallPackagesTransaction(TransactionWrapper *transac
 
 QObject *PackManContext::uninstallPackagesTransaction()
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     return m_uninstallPackagesTransaction;
 }
 
 void PackManContext::setInstallPackagesTransaction(TransactionWrapper *transaction)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     if (m_installPackagesTransaction)
         m_installPackagesTransaction->deleteLater();
 
@@ -228,64 +318,121 @@ void PackManContext::setInstallPackagesTransaction(TransactionWrapper *transacti
 
 QObject *PackManContext::installPackagesTransaction()
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     return m_installPackagesTransaction;
 }
 
 
 void PackManContext::setPackagesToBeInstalled(PackageList *list)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     m_packagesToBeInstalled = list;
     connect(m_packagesToBeInstalled, SIGNAL(changed()), this, SIGNAL(packagesToBeInstalledChanged()));
     emit packagesToBeInstalledChanged();
 }
 
-QDeclarativeListProperty<Package> PackManContext::packagesToBeInstalled()
+QQmlListProperty<Package> PackManContext::packagesToBeInstalled()
 {
-    return QDeclarativeListProperty<Package>(this, *m_packagesToBeInstallem_list());
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
+    int i;
+    QList<Package*> *list = m_packagesToBeInstalled->list();
+    QList<Package*>list2; // = m_packagesToBeInstalled->list();
+
+    for (i=0;i<list->size();i++) {
+        list2.append(list->at(i));
+    }
+
+    return QQmlListProperty<Package>(this, list2);
 }
 
 void PackManContext::setPackagesToBeUpdated(PackageList *list)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     m_packagesToBeUpdated = list;
     connect(m_packagesToBeUpdated, SIGNAL(changed()), this, SIGNAL(packagesToBeUpdatedChanged()));
     emit packagesToBeUpdatedChanged();
 }
 
-QDeclarativeListProperty<Package> PackManContext::packagesToBeUpdated()
+QQmlListProperty<Package> PackManContext::packagesToBeUpdated()
 {
-    return QDeclarativeListProperty<Package>(this, *m_packagesToBeUpdatem_list());
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
+    int i;
+    QList<Package*> *list = m_packagesToBeUpdated->list();
+    QList<Package*>list2;
+
+    for (i=0;i<list->size();i++) {
+        list2.append(list->at(i));
+    }	
+
+    return QQmlListProperty<Package>(this, list2);
 }
 
 void PackManContext::setPackagesToBeRemoved(PackageList *list)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     m_packagesToBeRemoved = list;
     connect(m_packagesToBeRemoved, SIGNAL(changed()), this, SIGNAL(packagesToBeRemovedChanged()));
     emit packagesToBeRemovedChanged();
 }
 
-QDeclarativeListProperty<Package> PackManContext::packagesToBeRemoved()
+QQmlListProperty<Package> PackManContext::packagesToBeRemoved()
 {
-    return QDeclarativeListProperty<Package>(this, *m_packagesToBeRemovem_list());
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
+    int i;
+    QList<Package*> *list = m_packagesToBeRemoved->list();
+    QList<Package*>list2;
+
+    for (i=0;i<list->size();i++) {
+        list2.append(list->at(i));
+    }		
+	
+    return QQmlListProperty<Package>(this, list2);
 }
 
 void PackManContext::setPackageGroups(PackageGroupList *list)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     m_packageGroups = list;
     emit packageGroupsChanged();
 }
 
-QDeclarativeListProperty<PackageGroup> PackManContext::packageGroups()
+QQmlListProperty<PackageGroup> PackManContext::packageGroups()
 {
-    return QDeclarativeListProperty<PackageGroup>(this, *m_packageGroups->list());
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
+    return QQmlListProperty<PackageGroup>(this, *m_packageGroups->list());
 }
 
 void PackManContext::setRepositories(RepositoryList *list)
 {
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
     m_repositories = list;
     emit repositoriesChanged();
 }
 
-QDeclarativeListProperty<Repository> PackManContext::repositories()
+QQmlListProperty<Repository> PackManContext::repositories()
 {
-    return QDeclarativeListProperty<Repository>(this, *m_repositories->list());
+#ifdef PACKAGECONTEXT_LOG
+    qDebug() << Q_FUNC_INFO;	
+#endif
+    return QQmlListProperty<Repository>(this, *m_repositories->list());
 }

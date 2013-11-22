@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -25,6 +26,7 @@
 #define FILTERPACKAGEMODEL_H
 
 #include <QSortFilterProxyModel>
+class Package;
 
 class FilterPackageModel : public QSortFilterProxyModel
 {
@@ -42,6 +44,11 @@ public:
     int markedCount();
 
     void setSourceModel(QAbstractItemModel *sourceModel);
+
+    Q_INVOKABLE QString displayName(int row);
+    Q_INVOKABLE QString name(int row);
+    Q_INVOKABLE QString version(int row);
+    Q_INVOKABLE Package *packageByRow(int row) const;
 
 signals:
     void totalCountChanged();

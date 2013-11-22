@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -31,22 +32,29 @@
 NetworkTest::NetworkTest(QObject *parent) :
     QObject(parent)
 {
-
+    qDebug() << Q_FUNC_INFO;	
 }
 
 // test if there is a IPv4 address available
 bool NetworkTest::hasNetworkConnection()
 {
+    qDebug() << Q_FUNC_INFO;	
     QList<QNetworkInterface> ifaces = QNetworkInterface::allInterfaces();
 
     foreach(QNetworkInterface iface, ifaces) {
+
         if ( iface.flags().testFlag(QNetworkInterface::IsUp)
-             && !iface.flags().testFlag(QNetworkInterface::IsLoopBack))
-            foreach (QNetworkAddressEntry entry, iface.addressEntries())
-                if (entry.ip().protocol() == QAbstractSocket::IPv4Protocol)
+             && !iface.flags().testFlag(QNetworkInterface::IsLoopBack)) {
+
+            foreach (QNetworkAddressEntry entry, iface.addressEntries()) {
+                if (entry.ip().protocol() == QAbstractSocket::IPv4Protocol) {
                     return true;
+                }
+            }
+        }
     }
 
+    qDebug() << Q_FUNC_INFO << "false";	
     return false;
 }
 
@@ -55,8 +63,8 @@ bool NetworkTest::testNetworkConnection(int timeout, const QString &host, int po
     qDebug() << Q_FUNC_INFO << timeout << host << port;
 
     if (host.isEmpty()) {
-        if (testNetworkConnection(10000, "repo.meego.com"))
-            return true;
+     //   if (testNetworkConnection(10000, "repo.meego.com"))
+     //       return true;
         return testNetworkConnection(5000, "www.google.com");
     }
 
@@ -71,12 +79,12 @@ bool NetworkTest::testNetworkConnection(int timeout, const QString &host, int po
 
 void NetworkTest::onHostFound()
 {
-//    qDebug() << Q_FUNC_INFO;
+    qDebug() << Q_FUNC_INFO;
 }
 
 void NetworkTest::onConnected()
 {
-//    qDebug() << Q_FUNC_INFO;
+    qDebug() << Q_FUNC_INFO;
 }
 
 void NetworkTest::onError(QAbstractSocket::SocketError error)

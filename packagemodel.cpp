@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -27,18 +28,28 @@
 
 #include <QHash>
 #include <QQmlContext>
+#include <QDebug>
 //#include <QtDeclarative>
+
+//#define PACKAGEMODEL_LOG
 
 // ------------------------------------------------------------
 
 void PackageModel::setRoleNames(QHash<int, QByteArray> roles)
 {
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO;	
+#endif
     m_roles = roles;
 }
 
 PackageModel::PackageModel(QObject *parent) :
     QAbstractListModel(parent)
 {
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO;	
+#endif	
+	
     m_addTimer.setInterval(200);
     m_addTimer.setSingleShot(true);
     connect(&m_addTimer, SIGNAL(timeout()), this, SLOT(flushBuffer()));
@@ -103,9 +114,62 @@ PackageModel::PackageModel(QObject *parent) :
     connect(&m_packageMarkings, SIGNAL(changed()), this, SIGNAL(markedCountChanged()));
 }
 
+QString PackageModel::getDisplayName(int row) const
+{
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO << row << m_packageList.count();
+#endif
+    if (m_packageList.count() <= row || row < 0) {
+        return QString("");
+    }
+
+    Package *package = m_packageList.at(row);
+    return package->displayName();
+}
+QString PackageModel::name(int row) const
+{
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO << row << m_packageList.count();
+#endif
+    if (m_packageList.count() <= row || row < 0) {
+        return QString("");
+    }
+
+    Package *package = m_packageList.at(row);
+    QSharedPointer <PackageInfo> data =  package->package();
+    return PackageKit::Transaction::packageName(data.data()->id());
+}
+QString PackageModel::version(int row) const
+{
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO << row << m_packageList.count();
+#endif
+    if (m_packageList.count() <= row || row < 0) {
+        return QString("");
+    }
+    Package *package = m_packageList.at(row);
+    QSharedPointer <PackageInfo> data =  package->package();
+    return PackageKit::Transaction::packageVersion(data.data()->id());
+}
+
+Package *PackageModel::packageByRow(int row)  const
+{
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO;
+#endif
+    if (m_packageList.count() <= row || row < 0) {
+        return NULL;
+    }
+    Package *package = m_packageList.at(row);
+    return package;	
+}
+
+
 QVariant PackageModel::data(const QModelIndex &index, int role) const
 {
-//    qDebug() << Q_FUNC_INFO << index << role;
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO << index.row() << role;
+#endif
 
     if (!index.isValid() || index.row() >= m_packageList.count())
         return QVariant("");
@@ -215,23 +279,23 @@ QVariant PackageModel::data(const QModelIndex &index, int role) const
 //        return updateInfo->obsoletes;
 
     case UpdateVendorUrlRole:
-        return updateInfo? QVariant(updateInfo->vendorUrl): QVariant("");
+        return QVariant(""); //updateInfo? QVariant(updateInfo->vendorUrls()): QVariant("");
     case UpdateBugzillaUrlRole:
-        return updateInfo? QVariant(updateInfo->bugzillaUrl): QVariant("");
+        return updateInfo? QVariant(updateInfo->bugzillaUrls()): QVariant("");
     case UpdateCveUrlRole:
-        return updateInfo? QVariant(updateInfo->cveUrl): QVariant("");
+        return updateInfo? QVariant(updateInfo->cveUrls()): QVariant("");
     case UpdateRestartNeededRole:
-        return updateInfo? QVariant(updateInfo->restart): QVariant("");
+        return updateInfo? QVariant(updateInfo->restart()): QVariant("");
     case UpdateTextRole:
-        return updateInfo? QVariant(updateInfo->updateText): QVariant("");
+        return updateInfo? QVariant(updateInfo->updateText()): QVariant("");
     case UpdateChangeLogRole:
-        return updateInfo? QVariant(updateInfo->changelog): QVariant("");
+        return updateInfo? QVariant(updateInfo->changelog()): QVariant("");
     case UpdateStateRole:
-        return updateInfo? QVariant(updateInfo->state): QVariant("");
+        return updateInfo? QVariant(updateInfo->state()): QVariant("");
     case UpdateIssuedRole:
-        return updateInfo && updateInfo->issued.isValid()? QVariant(updateInfo->issued.toString()): QVariant("-");
+        return updateInfo && updateInfo->issued().isValid()? QVariant(updateInfo->issued().toString()): QVariant("-");
     case UpdateUpdatedRole:
-        return updateInfo && updateInfo->updated.isValid()? QVariant(updateInfo->updated.toString()): QVariant("-");
+        return updateInfo && updateInfo->updated().isValid()? QVariant(updateInfo->updated().toString()): QVariant("-");
 
     default:
         return QVariant("");
@@ -255,6 +319,10 @@ void PackageModel::addPackage(QSharedPointer<PackageInfo> packagePtr, bool isUpd
 
 void PackageModel::flushBuffer()
 {
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO;	
+#endif
+	
     beginInsertRows(QModelIndex(), m_packageList.count(), m_packageList.count()+m_packageBuffer.count()-1);
     m_packageList << m_packageBuffer;
     m_packageBuffer.clear();
@@ -264,7 +332,9 @@ void PackageModel::flushBuffer()
 
 int PackageModel::rowCount(const QModelIndex &parent) const
 {
-//    qDebug() << Q_FUNC_INFO << m_packageList.count();
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO << m_packageList.count();
+#endif
     if (!parent.isValid())
         return m_packageList.count();
     else
@@ -273,6 +343,9 @@ int PackageModel::rowCount(const QModelIndex &parent) const
 
 void PackageModel::clear()
 {
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO;	
+#endif
     beginResetModel();
     m_packageMarkings.resetMarkings();
     m_packageList.clear();
@@ -282,19 +355,25 @@ void PackageModel::clear()
 
 Package *PackageModel::findPackage(QSharedPointer<PackageInfo> packagePtr)
 {
-    PackageKit::Package *p1 = packagePtr.data();
-    QString name1 = p1? p1->name(): QString();
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO;	
+#endif
+    PackageInfo *p1 = packagePtr.data();
+    QString id1 = p1? p1->id(): QString();
 
-    return findPackage(name1);
+    return findPackage(id1);
 }
 
-Package *PackageModel::findPackage(const QString &name)
+Package *PackageModel::findPackage(const QString &id)
 {
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO;	
+#endif
     for (int i = 0; i < m_packageList.count(); i++) {
         Package *package = m_packageList.at(i);
-        PackageKit::Package *p2 = package->basicInfo();
-        QString name2 = p2? p2->name(): QString();
-        if (name == name2)
+        PackageInfo *p2 = package->basicInfo();
+        QString id2 = p2? p2->id(): QString();
+        if (id == id2)
             return package;
     }
     return 0;
@@ -302,7 +381,9 @@ Package *PackageModel::findPackage(const QString &name)
 
 void PackageModel::onPackageChanged()
 {
-//    qDebug() << Q_FUNC_INFO;
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO;
+#endif
 
     Package *p = dynamic_cast<Package*>(sender());
     if (p) {
@@ -316,7 +397,9 @@ void PackageModel::onPackageChanged()
 
 void PackageModel::mark(int row, bool set)
 {
-//    qDebug() << Q_FUNC_INFO << row << set;
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO << row << set;
+#endif
 
     Package *package = m_packageList.at(row);
 
@@ -325,16 +408,26 @@ void PackageModel::mark(int row, bool set)
 
 void PackageModel::resetMarkings()
 {
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO;	
+#endif
     m_packageMarkings.resetMarkings();
 }
 
 int PackageModel::markedCount()
 {
-    return m_packageMarkings.count();
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO;	
+#endif
+    int iValue = m_packageMarkings.count();
+    return iValue;	
 }
 
 QModelIndex PackageModel::index(int row, int column, const QModelIndex &parent) const
 {
+#ifdef PACKAGEMODEL_LOG   	
+    qDebug() << Q_FUNC_INFO;	
+#endif
     if (!parent.isValid() && row >= 0 && row < m_packageList.count() && column == 0)
         return createIndex(row, column, m_packageList.at(row));
     else

@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -21,10 +22,8 @@
  *
  */
 
-import QtQuick 1.0
-import "utils.js" as Utils
-import com.nokia.meego 1.0
-import "UIConstants.js" as UI
+import QtQuick 2.0
+import com.nokia.meego 2.0
 
 AppPageWithActionMenu {
     id: view
@@ -32,6 +31,7 @@ AppPageWithActionMenu {
     property string operationText
     property string preparationTitle
     property string executionTitle
+    property int currentIndex
 
     property variant listModel
     property color markerColor
@@ -46,12 +46,9 @@ AppPageWithActionMenu {
 
     property alias emptyListNote: emptyListLabel.text
 
-    property alias filterInputVisible: searchIcon.checked
-
-
-
     goButtonLongLabel: operationText + " selected (" + packageslist.model.markedcount + ")"
     goButtonShortLabel: operationText + " (" + packageslist.model.markedcount +")"
+
 
     onReset: {
         packageslist.model.resetMarkings();
@@ -100,7 +97,7 @@ AppPageWithActionMenu {
         Text {
             width: parent.width
             font.pixelSize: UI.FONT_SMALL
-            color: platformStyle.textColor
+          //  color: platformStyle.textColor
             wrapMode: Text.WordWrap
             text: view.listTransaction? view.listTransaction.errorText: ""
             horizontalAlignment: Text.AlignHCenter
@@ -108,11 +105,13 @@ AppPageWithActionMenu {
     }
 
     BusyIndicator {
-        platformStyle: BusyIndicatorStyle { size: "large" }
+      //  platformStyle: BusyIndicatorStyle { size: "large" }
         running: visible
         anchors.centerIn: packageslist
         visible: listTransaction != undefined && listTransaction.state == "executing"
     }
+
+    property variant selectedPkg;
 
     PackageList {
         id: packageslist
@@ -123,6 +122,13 @@ AppPageWithActionMenu {
         anchors.fill:  payloadArea
 
         onShowDetails: {
+            console.log( "onShowDetails" )
+            console.log( iLineIndex )
+            console.log( view.listModel.name(iLineIndex) )
+
+            selectedPkg = view.listModel.packageByRow(iLineIndex);
+            packageDetailsComponent.pkg = selectedPkg
+//            console.log( view.listModel.name(0) )
             pageStack.push(packageDetailsComponent)
         }
 
@@ -201,12 +207,15 @@ AppPageWithActionMenu {
             anchors.rightMargin: 30
 
             iconSource: "../images/icon-m-toolbar-search-white-selected.png"
-            onCheckedChanged: { listModel.setFilterString(checked? filter.text: ""); filter.focus() }
-            platformStyle: ButtonStyle {
-                                    background: "../images/void.png"
-                                    pressedBackground: "../images/void.png"
-                                    checkedBackground: "../images/void.png"
-                                }
+            onCheckedChanged: {
+                listModel.setFilterString(checked? filter.text: "");
+                filter.focus()
+            }
+            platformStyle: ToolButtonStyle {
+                background: "../images/void.png"
+                pressedBackground: "../images/void.png"
+                checkedBackground: "../images/void.png"
+            }
         }
 
     }
@@ -223,12 +232,23 @@ AppPageWithActionMenu {
         filtered: listModel.filteredcount
         onChanged: listModel.setFilterString(text);
         visible: !emptyListNotification.visible && !transactionErrorNotification.visible && filterInputVisible
-        Component.onCompleted: { listModel.setFilterString(""); }
+        Component.onCompleted: {
+            listModel.setFilterString("");
+        }
     }
 
-    ScrollDecorator { flickableItem: packageslist; __minIndicatorSize: 25 }
 
-    Component { id: packageDetailsComponent;  PackageDetails { } }
+    ScrollDecorator {
+        flickableItem: packageslist; __minIndicatorSize: 25
+    }
+
+    Component {
+        id: packageDetailsComponent;
+        PackageDetails {
+            item: packageslist.currentItem
+        }
+    }
+
 
     Transaction {
         id: prepareTransaction
@@ -259,6 +279,7 @@ AppPageWithActionMenu {
         onAccepted: { filter.text = ""; }
     }
 
+
     tools: currentTools
     ToolBarLayout {
         id: currentTools
@@ -286,4 +307,5 @@ AppPageWithActionMenu {
             }
 
     }
+
 }

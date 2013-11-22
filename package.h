@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -43,13 +44,16 @@ public:
     enum Marking { NoOperation = 0, Install = 1, Update = 2, Uninstall = 4 };
         Q_DECLARE_FLAGS(Markings, Marking)
 
+    explicit Package(QObject *parent = 0);
     explicit Package(QSharedPointer<PackageInfo> packagePtr, bool isUpdatePackage = false, QObject *parent = 0);
 
     QString displayName() const;
     QString filterName() const;
 
+    QString id() const;
     QString name() const;
     QString version() const;
+    QString summary() const;
 
     QSharedPointer<PackageInfo> package() const;
     PackageInfo *basicInfo() const;
@@ -70,7 +74,7 @@ public:
     DataAvailability updateInfoAvailability();
 
     bool operator==(Package other) const;
-
+    bool equals(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary);
 signals:
     void changed();
 

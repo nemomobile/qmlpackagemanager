@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -22,7 +23,6 @@
  */
 
 #include <QGuiApplication>
-//#include "qmlapplicationviewer.h"
 #include "packagemanager.h"
 #include "iconprovider.h"
 
@@ -33,25 +33,27 @@
 #include <QGraphicsObject>
 
 #include <QDebug>
+#include <QtQml>
 #include <QQmlContext>
 #include <QQmlEngine>
-#include <QApplication>
-
+#include <QGuiApplication>
 
 #include "package.h"
 #include "packagegroup.h"
 #include "packagemarkings.h"
 #include "repository.h"
+#include "packagemodel.h"
+#include "filterpackagemodel.h"
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
 
     QQuickView viewer;
 
     PackageManager *pm = new PackageManager(&viewer);
 
-    QDeclarativeContext *context = viewer.rootContext();
+    QQmlContext *context = viewer.rootContext();
     context->setContextProperty("initialstate", "mainview");
     context->setContextProperty("mainWindow", &viewer);
     viewer.engine()->addImageProvider(QLatin1String("icons"), new IconProvider);
@@ -61,12 +63,11 @@ int main(int argc, char *argv[])
     qmlRegisterType<PackageGroup>("Package", 1,0, "PackageGroup");
     qmlRegisterType<PackageMarkings>("Package", 1, 0, "PackageMarkings");
     qmlRegisterType<Repository>("Repository", 1,0, "Repository");
+    qmlRegisterType<FilterPackageModel>("FilterPackageModel", 1,0, "FilterPackageModel");
 
-    viewer.setMainQmlFile(QLatin1String("qml/package-manager/main.qml"));
+    viewer.setSource(QUrl("qrc:/qml/main.qml"));
 
-    viewer.setOrientation(QQuickView::ScreenOrientationAuto);
-
-    viewer.showExpanded();
+    viewer.showFullScreen();
 
     return app.exec();
 }

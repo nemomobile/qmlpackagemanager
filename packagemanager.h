@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -67,17 +68,19 @@ private slots:
     void onInstalledPackage(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary);
     void onUpdateAvailablePackage(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary);
     void onAvailablePackage(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary);
-    void onFinished(PackageKit::Transaction::Exit status);
+    void onFinished(PackageKit::Transaction::Exit status, uint runtime);
 
     void onChanged();
     void onCategory(const QString &parent_id, const QString &cat_id, const QString &name, const QString &summary, const QString &icon);
-    void onErrorCode(uint error, const QString &details);
+    void onErrorCode(PackageKit::Transaction::Error error, const QString &details);
     //void onEulaRequired(const PackageKit::Client::EulaInfo &info);
     //void onMediaChangeRequired(PackageKit::Enum::MediaType type, const QString& id, const QString& text);
     //void onFiles(const QSharedPointer<PackageKit::Package> &package, const QStringList &filenames);
-    void onMessage(uint type, const QString &message);
+    void onMessage(PackageKit::Transaction::Message type, const QString &message);
     void onRepoDetail(const QString& repoId, const QString& description, bool enabled);
-    void onRepoSignatureRequired(const QString &pid, const QString &repoName, const QString &keyUrl, const QString &keyUserid, const QString &keyId, const QString &keyFingerprint, const QString &keyTimestamp, uint type);
+    void onRepoSignatureRequired(const QString &pid, const QString &repoName,
+        const QString &keyUrl, const QString &keyUserid, const QString &keyId,
+        const QString &keyFingerprint, const QString &keyTimestamp, PackageKit::Transaction::SigType type);
     //void onRequireRestart(PackageKit::Enum::Restart type, const QSharedPointer<PackageKit::Package> &package);
 
     void onRefreshCacheFinished(PackageKit::Transaction::Exit status, uint runtime);
@@ -116,6 +119,10 @@ private:
     PackageGroupList m_packageGroups;
 
     RepositoryList m_repositories;
+
+    Package *get(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary);
+    bool m_bSimulation;
+
 };
 
 #endif // PACKAGEMANAGER_H

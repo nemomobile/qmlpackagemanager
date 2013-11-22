@@ -21,14 +21,18 @@ symbian:TARGET.CAPABILITY += NetworkServices
 # DEFINES += QMLJSDEBUGGER
 
 # If your application uses the Qt Mobility libraries, uncomment
-# the following lines and add the respective components to the 
-# MOBILITY variable. 
+# the following lines and add the respective components to the
+# MOBILITY variable.
 # CONFIG += mobility
 # MOBILITY +=
 
 CONFIG += link_pkgconfig
 #PKGCONFIG += PackageKit-Qt5
 QT += dbus network qml quick widgets
+
+LIBS += -lpackagekit-qt5
+
+RESOURCES += qml/package-manager/res.qrc qml/images/images.qrc
 
 INCLUDEPATH += /usr/include/PackageKit/packagekit-qt5/
 
@@ -70,4 +74,13 @@ HEADERS += \
     packageinfo.h \
     detailsinfo.h \
     updatedetails.h
+
+
+
+target.path = $$INSTALL_ROOT/usr/bin/
+
+desktop.files = mg-package-manager.desktop
+desktop.path = $$INSTALL_ROOT/usr/share/applications
+
+INSTALLS += target desktop
 

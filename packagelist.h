@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -38,6 +39,7 @@ public:
     explicit PackageList(QObject *parent = 0);
 
     QList<Package*> *list();
+    Package* get(PackageKit::Transaction::Info info, const QString &packageID, const QString &summary);
 
     void operator<<(QSharedPointer<PackageInfo> packagePtr);
 

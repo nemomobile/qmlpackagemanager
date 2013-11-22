@@ -33,8 +33,7 @@
 // Enable debugging before any QDeclarativeEngine is created
 struct QmlJsDebuggingEnabler
 {
-    QmlJsDebuggingEnabler()
-    {
+    QmlJsDebuggingEnabler() {
         QDeclarativeDebugHelper::enableDebugging();
     }
 };

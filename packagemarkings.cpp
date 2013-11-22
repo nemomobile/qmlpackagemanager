@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -22,15 +23,26 @@
  */
 
 #include "packagemarkings.h"
+#include <QDebug>
+
+//#define PACKAGEMARKINGS_LOG   	
+
 
 PackageMarkings::PackageMarkings(QObject *parent) :
     QObject(parent)
 {
+#ifdef PACKAGEMARKINGS_LOG   	
+    qDebug() << Q_FUNC_INFO;	
+#endif
+	
 }
 
 void PackageMarkings::mark(Package *package, bool set)
 {
 //    qDebug() << Q_FUNC_INFO << package->name() << set;
+#ifdef PACKAGEMARKINGS_LOG   	
+    qDebug() << Q_FUNC_INFO;	
+#endif
 
     package->mark(set);
 
@@ -48,6 +60,9 @@ void PackageMarkings::mark(Package *package, bool set)
 void PackageMarkings::resetMarkings()
 {
 //    qDebug() << Q_FUNC_INFO;
+#ifdef PACKAGEMARKINGS_LOG   	
+    qDebug() << Q_FUNC_INFO;	
+#endif
 
     if (m_marked.count() == 0)
         return;
@@ -63,10 +78,16 @@ void PackageMarkings::resetMarkings()
 
 int PackageMarkings::count()
 {
+#ifdef PACKAGEMARKINGS_LOG   	
+    qDebug() << Q_FUNC_INFO;	
+#endif
     return m_marked.count();
 }
 
 QList<Package*> PackageMarkings::packagesMarked()
 {
+#ifdef PACKAGEMARKINGS_LOG   	
+    qDebug() << Q_FUNC_INFO;	
+#endif
     return m_marked;
 }

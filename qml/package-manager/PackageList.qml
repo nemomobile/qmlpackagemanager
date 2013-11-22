@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -21,8 +22,8 @@
  *
  */
 
-import QtQuick 1.0
-import com.nokia.meego 1.0
+import QtQuick 2.0
+import com.nokia.meego 2.0
 
 ListView {
     id:view
@@ -31,14 +32,14 @@ ListView {
 
     spacing: 0
 
-    signal showDetails
+    signal showDetails(int iLineIndex)
     signal showContextMenu(int x, int y)
 
     focus: true
 
     delegate: PackageListDelegate {
         id: delegate
-        property variant packageData: model
+        pkg: listModel
         marker: Component {
             Rectangle {
                 radius: 2
@@ -46,7 +47,7 @@ ListView {
             }
         }
 
-        onShowDetails: { view.showDetails() }
+        onShowDetails: { view.showDetails(iLineIndex) }
 
         onShowContextMenu: {
 //            console.log("opencontextmenu " + (x + delegate.x) + " " + (y + delegate.y));
@@ -56,7 +57,7 @@ ListView {
 
     Item {
         property int count: view.model.totalcount
-        onCountChanged:  {
+        onCountChanged: {
             if (count == 0)
                 currentIndex = 0
         }

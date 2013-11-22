@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -22,18 +23,27 @@
  */
 
 #include "packagegroup.h"
-
-#include <QPackageKit>
+#include "packageinfo.h"
+//#include <QPackageKit>
 #include <QDebug>
+
+//#define PACKAGEGROUP_LOG		
+
 
 PackageGroup::PackageGroup(uint group, QObject *parent) :
     QObject(parent),
     m_group(group)
 {
+#ifdef PACKAGEGROUP_LOG	
+    qDebug() << Q_FUNC_INFO;	
+#endif	
 }
 
 uint PackageGroup::group()
 {
+#ifdef PACKAGEGROUP_LOG	
+    qDebug() << Q_FUNC_INFO;	
+#endif
     return m_group;
 }
 
@@ -43,15 +53,22 @@ uint PackageGroup::group()
 PackageGroupList::PackageGroupList(QObject *parent) :
     QObject(parent)
 {
-    PackageKit::Enum::Groups groups = PackageKit::Client::instance()->groups();
+#ifdef PACKAGEGROUP_LOG	
+    qDebug() << Q_FUNC_INFO;	
+#endif
 
-    foreach(PackageKit::Enum::Group group, groups) {
-        m_list << new PackageGroup(group);
+    int i;
+    for (i=0;i<PackageKit::Transaction::GroupNewest+1;i++) {
+        PackageGroup *p = new PackageGroup((PackageKit::Transaction::Group)i);
+        m_list << p;
     }
 }
 
 QList<PackageGroup *> *PackageGroupList::list()
 {
+#ifdef PACKAGEGROUP_LOG	
+    qDebug() << Q_FUNC_INFO  << m_list.size();	
+#endif
     return &m_list;
 }
 

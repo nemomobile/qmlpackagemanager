@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -21,35 +22,43 @@
  *
  */
 
-import QtQuick 1.0
-import "UIConstants.js" as UI
-import com.nokia.meego 1.0
+import QtQuick 2.0
+import com.nokia.meego 2.0
 
-Column {
-
+Item {
+    id: root
     property string title
-    property alias model: repeater.model
+//    property alias model: root.model
+    property variant model
 
-    property Style platformStyle: LabelStyle { }
+/*
+    delegate: ModifiedPackagesListDelegate {
+        id: delegate
+        pkgs: listModel
+    }
+*/
+
+   // property Style platformStyle: LabelStyle { }
 
     Text {
         id: titleText
-        text: title + " (" + repeater.model.length + ")"
+        text: title + " (" + root.model.size() + ")"
         font.bold:  true
-        font.pixelSize: UI.FONT_DEFAULT
-        color: platformStyle.textColor
-        visible: repeater.model.length > 0
+     //   font.pixelSize: UI.FONT_DEFAULT
+     //   color: platformStyle.textColor
+       // visible: repeater.model.length > 0
     }
-
+/*
     Column {
         Repeater {
             id: repeater
-            Text  {
+            Text {
                 text: model.modelData.name + " " + model.modelData.version
-                font.pixelSize: UI.FONT_LSMALL
-                color: platformStyle.textColor
+           //     font.pixelSize: UI.FONT_LSMALL
+             //   color: platformStyle.textColor
             }
         }
     }
+    */
 
 }

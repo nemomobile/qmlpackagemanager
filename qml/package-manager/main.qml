@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -21,15 +22,15 @@
  *
  */
 
-import QtQuick 1.1
-import com.nokia.meego 1.0
+import QtQuick 2.0
+import com.nokia.meego 2.0
 
 PageStackWindow {
     id: window
 
 //    platformStyle: PageStackWindowStyle { id: defaultStyle }
 
-    anchors.centerIn: parent
+  //  anchors.fill: parent
     state: initialstate
 
     Component.onCompleted: {
@@ -41,6 +42,8 @@ PageStackWindow {
     property string currentView: "MainView"
 
     function changeView(view) {
+    console.log("function changeView(view)")
+    console.log(view)
         var component = loadComponent(view + ".qml");
         if (component != null) {
             pageStack.clear();
@@ -50,6 +53,8 @@ PageStackWindow {
     }
 
     function pushPage(view) {
+    console.log("function changeView(view)")
+    console.log(view)
         var component = loadComponent(view + ".qml");
         if (component != null) {
             pageStack.push(component);
@@ -67,4 +72,5 @@ PageStackWindow {
     }
 
     initialPage: MainView { }
+
 }

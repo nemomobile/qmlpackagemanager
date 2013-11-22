@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -126,6 +127,11 @@ public:
     PackageMarkings *packageMarkings() { return &m_packageMarkings; }
 
     QModelIndex index(int row, int column = 0, const QModelIndex &parent = QModelIndex()) const;
+
+    Q_INVOKABLE QString getDisplayName(int row) const;
+    Q_INVOKABLE QString name(int row) const;
+    Q_INVOKABLE QString version(int row) const;
+    Q_INVOKABLE Package *packageByRow(int row) const;
 
 signals:
     void countChanged();

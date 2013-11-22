@@ -2,6 +2,7 @@
  * This file is part of mg-package-manager
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 Timo Hannukkala <timo.hannukkala@nomovok.com>
  *
  * Contact: Kyösti Ranto <kyosti.ranto@digia.com>
  *
@@ -76,6 +77,7 @@ public:
     QList<Repository*> *list();
 
     void operator<<(Repository *repository);
+    Repository *get(const QString &id);
 
 signals:
     void changed();
